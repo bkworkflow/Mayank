@@ -517,7 +517,7 @@
     const EMAILJS_SERVICE_ID = "service_kfiehhp";
     const EMAILJS_TEMPLATE_ID = "template_ywav7fj";
     const EMAILJS_PUBLIC_KEY = "RzHAQ1CzyEimky9wP";
-    const supabaseClient = supabase.createClient('https://grwgobmzgxunoekphkcz.supabase.co', 'sb_publishable_3BIYKo0MzVzGfAFNLxwsBw_wb7ZtvJG');
+    const supabase = window.supabase.createClient('https://grwgobmzgxunoekphkcz.supabase.co', 'sb_publishable_3BIYKo0MzVzGfAFNLxwsBw_wb7ZtvJG');
 
     if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
         emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
