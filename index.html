@@ -1027,10 +1027,10 @@
         if (pageIndexList.length === 0) {
             htmlBuffer = `<tr><td colspan="12" style="text-align: center; padding: 20px; color: #777777;">No rows match your login or active filters.</td></tr>`;
         } else {
-            pageIndexList.forEach(index => {
+            pageIndexList.forEach((index, visibleOffset) => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
 const isFinished = isCompletedStatus(rowData.status);
-const originalSerialNumber = index + 1;
+const visibleSerialNumber = pageStartIndex + visibleOffset + 1;
                 htmlBuffer += `
     <tr data-row-index="${index}" 
         class="${isFinished ? 'row-signed-completed' : ''} ${
@@ -1041,7 +1041,7 @@ const originalSerialNumber = index + 1;
                             <div class="chk-col">
                                 <input type="checkbox" style="margin:0;">
                                 <span style="color: #777777;">
-    ${isFinished ? '<span class="row-status-icon row-lock-icon">&#128274;</span>' : ''}${!isFinished && (rowData.priority === 'High' || rowData.priority === 'Urgent') ? '<span class="row-status-icon row-priority-flag">&#128681;</span>' : ''}${originalSerialNumber}
+    ${isFinished ? '<span class="row-status-icon row-lock-icon">&#128274;</span>' : ''}${!isFinished && (rowData.priority === 'High' || rowData.priority === 'Urgent') ? '<span class="row-status-icon row-priority-flag">&#128681;</span>' : ''}${visibleSerialNumber}
 </span>
                             </div>
                         </td>
