@@ -848,15 +848,26 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
 
     async function saveRowToServer(rowIndex, rowData) {
         const numericRowId = Number(rowIndex);
-        const cleanRowData = { ...rowData };
-        ['allocDate', 'expDate'].forEach(field => {
+        const allowedFields = [
+            'client', 'jobId', 'yearEnd', 'yearEndYear', 'type', 'allocDate', 'expDate',
+            'craAuth', 'gstStatus', 'allocTo', 'status', 'priority', 'lastOverdueNotificationDate'
+        ];
+        const cleanRowData = { id: numericRowId };
+
+        allowedFields.forEach(field => {
+            if (Object.prototype.hasOwnProperty.call(rowData, field)) {
+                cleanRowData[field] = rowData[field];
+            }
+        });
+
+        ['allocDate', 'expDate', 'lastOverdueNotificationDate'].forEach(field => {
             if (cleanRowData[field] === '') cleanRowData[field] = null;
         });
         setSyncStatus('Saving...', '#0076a8');
 
         const { error } = await supabaseClient
             .from('workflow')
-            .upsert({ id: numericRowId, ...cleanRowData }, { onConflict: 'id' });
+            .upsert(cleanRowData, { onConflict: 'id' });
 
         if (error) {
             setSyncStatus('Save failed', '#b00020');
@@ -922,5 +933,6 @@ updateClock();
     </div>
 </div></body>
 </html>
+
 
 
