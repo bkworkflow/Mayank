@@ -1030,7 +1030,7 @@
             pageIndexList.forEach((index, visibleOffset) => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
 const isFinished = isCompletedStatus(rowData.status);
-const visibleSerialNumber = pageStartIndex + visibleOffset + 1;
+const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                 htmlBuffer += `
     <tr data-row-index="${index}" 
         class="${isFinished ? 'row-signed-completed' : ''} ${
