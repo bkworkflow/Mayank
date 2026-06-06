@@ -655,7 +655,7 @@
 <th>
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('yearEnd')">
-                                <span>Year End</span>
+                                <span>Year End / ME / QE</span>
                                 <span class="sort-trigger" id="sort-yearEnd">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('yearEnd', this.value)">
@@ -1080,6 +1080,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             <select class="data-input" data-field="type">
                                 <option value="" ${rowData.type === '' ? 'selected' : ''}>Select...</option>
                                 <option value="T2" ${rowData.type === 'T2' ? 'selected' : ''}>T2</option>
+                                <option value="Monthly BK" ${rowData.type === 'Monthly BK' ? 'selected' : ''}>Monthly BK</option>
                                 <option value="NTR" ${rowData.type === 'NTR' ? 'selected' : ''}>NTR</option>
                                 <option value="GST" ${rowData.type === 'GST' ? 'selected' : ''}>GST</option>
                                 <option value="Funding Financials" ${rowData.type === 'Funding Financials' ? 'selected' : ''}>Funding Financials</option>
@@ -1123,6 +1124,8 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                                 <option value="" ${rowData.status === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Allocated" ${rowData.status === 'Allocated' ? 'selected' : ''}>Allocated</option>
                                 <option value="In Progress" ${rowData.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Meeting Required" ${rowData.status === 'Meeting Required' ? 'selected' : ''}>Meeting Required</option>
+                                <option value="Reports Sent" ${rowData.status === 'Reports Sent' ? 'selected' : ''}>Reports Sent</option>
                                 <option value="On Hold" ${rowData.status === 'On Hold' ? 'selected' : ''}>On Hold</option>
                                 <option value="Missing" ${rowData.status === 'Missing' ? 'selected' : ''}>Missing</option>
                                 <option value="Sent for Review" ${rowData.status === 'Sent for Review' ? 'selected' : ''}>Sent for Review</option>
