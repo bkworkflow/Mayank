@@ -7,209 +7,213 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOKKEEPING Workflow</title>
+    <title>CTC Accounting Workflow</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
-            --ctc-green: #1d5217;
-            --ctc-green-hover: #1380e;
-            --dark-bar: #3d3d3d;
-            --light-beige: #e9e8e3;
-            --border-color: #bcbbba;
-            --text-dark: #111111;
-            
-            /* Theme Colors */
-            --table-header-bg: #f4f7f9;
-            --table-header-text: #0076a8;
-            --pagination-blue: #0084c2;
+            --firm-green: #135f3b;
+            --firm-green-dark: #0a3f28;
+            --firm-red: #b3261e;
+            --firm-gold: #c9952f;
+            --ink: #15231d;
+            --muted: #68736d;
+            --line: #d7ded9;
+            --panel: #ffffff;
+            --panel-soft: #f7faf8;
+            --page: #eef3f0;
+            --header: #eef6f1;
+            --focus: #1473a6;
+            --complete: #e6f4ea;
+            --urgent: #ffe1e1;
+            --high: #fff1cf;
+            --shadow: 0 10px 28px rgba(17, 35, 28, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--light-beige);
-            color: var(--text-dark);
+            background:
+                linear-gradient(180deg, rgba(19, 95, 59, 0.08), rgba(238, 243, 240, 0) 240px),
+                var(--page);
+            color: var(--ink);
             margin: 0;
             padding: 0;
             font-size: 13px;
         }
-.top-right-logo {
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    padding: 6px 16px;
-    border-radius: 4px;
-    display: flex;             /* Enables layout control */
-    flex-direction: row;       /* Aligns items horizontally */
-    align-items: center;       /* Centers items vertically */
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-}
-        /* Top Brand Header Navbar */
+
         .navbar {
-            background: #e2e1dc;
-            padding: 10px 24px;
+            min-height: 76px;
+            background: #ffffff;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            gap: 18px;
+            border-bottom: 1px solid var(--line);
+            box-shadow: 0 3px 16px rgba(17, 35, 28, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .brand-header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
+            min-width: 0;
         }
 
         .logo-text {
-            font-size: 24px;
-            font-weight: 500;
-            color: #555555;
+            font-size: 23px;
+            font-weight: 650;
+            color: #425048;
             white-space: nowrap;
         }
+
         .logo-text strong {
-            color: var(--ctc-green);
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            color: var(--firm-green);
+            font-weight: 800;
         }
 
         .center-company-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #666666;
-            letter-spacing: 0.5px;
-            border-left: 2px solid var(--border-color);
-            padding-left: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #56645d;
+            border-left: 1px solid var(--line);
+            padding-left: 18px;
             text-transform: uppercase;
-            white-space: nowrap;
+            white-space: normal;
             display: flex;
             align-items: center;
             gap: 8px;
+            line-height: 1.35;
+            max-width: 920px;
         }
-        
+
         .center-company-title .sub-corp {
-            font-size: 18px;
-            font-weight: 600;
-            color: #666666;
-            letter-spacing: 0.5px;
+            font-size: 13px;
+            font-weight: 650;
+            color: #697770;
         }
 
-        /* Top Right Logo Container */
+        #save-status {
+            padding: 4px 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--panel-soft);
+        }
+
+        #live-clock {
+            font-variant-numeric: tabular-nums;
+        }
+
         .top-right-logo {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 6px 16px;
-            border-radius: 4px;
+            background: linear-gradient(180deg, #ffffff, #f6faf7);
+            border: 1px solid var(--line);
+            padding: 8px 18px;
+            border-radius: 6px;
+            min-width: 98px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
         }
+
         .top-right-logo .ctc-txt {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--ctc-green);
+            font-size: 17px;
+            font-weight: 850;
+            color: var(--firm-green);
             line-height: 1;
-            letter-spacing: 1px;
         }
+
         .top-right-logo .sub-txt {
-            font-size: 5px;
+            font-size: 6px;
             text-transform: uppercase;
-            color: #777777;
-            letter-spacing: 0.5px;
-            margin-top: 1px;
+            color: var(--muted);
+            margin-top: 2px;
         }
 
-        /* Main Navigation Tab Ribbon */
-        .nav-ribbon {
-            background: var(--dark-bar);
-            display: flex;
-            padding: 0 24px;
-        }
-        .nav-tab {
-            color: #cdcdcd;
-            padding: 12px 20px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .nav-tab.active {
-            background: var(--ctc-green);
-            color: #ffffff;
-        }
-
-        /* View Workspace Container Layout */
         .workspace-container {
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
+            padding: 18px 22px 48px;
+        }
+
+        .workflow-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(140px, 1fr));
             gap: 12px;
+            margin-bottom: 14px;
         }
 
-        /* Pagination Ribbon Utility Row */
+        .summary-pill {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--firm-green);
+            border-radius: 7px;
+            padding: 10px 12px;
+            box-shadow: 0 2px 10px rgba(17, 35, 28, 0.05);
+        }
+
+        .summary-pill.priority {
+            border-left-color: var(--firm-red);
+        }
+
+        .summary-pill.complete {
+            border-left-color: var(--firm-gold);
+        }
+
+        .summary-label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 750;
+        }
+
+        .summary-value {
+            display: block;
+            margin-top: 3px;
+            font-size: 22px;
+            color: var(--ink);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
         .pagination-ribbon {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 4px;
+            display: none;
         }
 
-        .pagination-container {
-            display: flex;
-            border: 1px solid #d2d2d2;
-            background: #ffffff;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .page-btn {
-            padding: 6px 12px;
-            font-size: 12px;
-            color: #555555;
-            background: #ffffff;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .page-btn:not(:last-child) {
-            border-right: 1px solid #e0e0e0;
-        }
-
-        .page-btn.active {
-            background: var(--pagination-blue);
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        /* Datagrid Table Properties */
         .datagrid-overflow-container {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow-x: auto;
-            max-height: 70vh;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: auto;
+            max-height: calc(100vh - 178px);
+            box-shadow: var(--shadow);
         }
 
         .datagrid-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             text-align: left;
             white-space: nowrap;
             font-size: 12px;
         }
 
         .datagrid-table th {
-            background: var(--table-header-bg);
-            color: var(--table-header-text);
-            font-weight: 500;
-            padding: 12px 10px;
-            border-bottom: 2px solid #e2e7eb;
-            border-right: 1px solid #eaedf1;
+            background: var(--header);
+            color: var(--firm-green-dark);
+            font-weight: 750;
+            padding: 11px 10px 9px;
+            border-bottom: 1px solid var(--line);
+            border-right: 1px solid #e3e9e5;
             vertical-align: middle;
             user-select: none;
             position: sticky;
@@ -217,165 +221,203 @@
             z-index: 2;
         }
 
+        .datagrid-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .datagrid-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
         .th-content {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .th-label-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             cursor: pointer;
         }
 
-        /* Dual arrow sorting icon indicator */
         .sort-trigger {
             display: inline-flex;
-            flex-direction: column;
             align-items: center;
             font-size: 9px;
             line-height: 1;
-            margin-left: 4px;
-            vertical-align: middle;
-            color: #a0b2be;
+            color: #8ba197;
         }
-        
+
         .th-label-row:hover {
-            color: var(--ctc-green-hover);
+            color: var(--firm-red);
         }
 
         .header-filter-input {
             width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #cccccc;
-            border-radius: 3px;
-            padding: 2px 4px;
+            border: 1px solid #cfd9d3;
+            border-radius: 5px;
+            padding: 4px 7px;
             font-size: 11px;
-            font-weight: normal;
-            color: #333333;
+            color: var(--ink);
             background-color: #ffffff;
         }
 
         .header-filter-input:focus {
-            border-color: var(--pagination-blue);
-            outline: none;
+            border-color: var(--focus);
+            outline: 2px solid rgba(20, 115, 166, 0.13);
         }
 
         .datagrid-table td {
-            padding: 4px 6px;
-            border-bottom: 1px solid #eeeeee;
-            border-right: 1px solid #f4f4f4;
-            color: #333333;
+            padding: 6px 8px;
+            border-bottom: 1px solid #edf1ee;
+            border-right: 1px solid #f1f4f2;
+            color: #29342f;
+            background: #ffffff;
         }
 
-        /* Entry elements design adjustments */
+        .datagrid-table tbody tr:nth-child(even) td {
+            background-color: #fbfdfc;
+        }
+
+        .datagrid-table tbody tr:hover td {
+            background-color: #f4faf6;
+        }
+
         .datagrid-table td input[type="text"],
         .datagrid-table td input[type="date"],
         .datagrid-table td select {
             width: 100%;
-            box-sizing: border-box;
             border: 1px solid transparent;
             background: transparent;
-            padding: 4px;
+            padding: 5px 6px;
             font-size: 12px;
-            color: #333333;
-            border-radius: 3px;
+            color: #25332d;
+            border-radius: 5px;
+            min-height: 28px;
         }
 
         .datagrid-table td input[type="text"]:focus,
         .datagrid-table td input[type="date"]:focus,
         .datagrid-table td select:focus {
-            border-color: var(--pagination-blue);
+            border-color: var(--focus);
             background: #ffffff;
-            outline: none;
-        }
-
-        .datagrid-table tbody tr {
-            background-color: #ffffff; 
-        }
-        
-        .datagrid-table tbody tr:hover {
-            background-color: #fff1ef;
+            outline: 2px solid rgba(20, 115, 166, 0.12);
         }
 
         .chk-col {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
 
         .select-status-inline {
             width: 100%;
-            padding: 3px 6px;
-            border-radius: 3px;
-            border: 1px solid #cccccc;
+            padding: 5px 7px;
+            border-radius: 5px;
+            border: 1px solid #cfd9d3;
             font-size: 11px;
             background: #ffffff;
-            color: #333;
+            color: #25332d;
         }
 
-@keyframes priorityBlink {
-    0%   { background-color: #ffffff; }
-    50%  { background-color: #ffb3b3; }
-    100% { background-color: #ffffff; }
-}
+        @keyframes priorityHighPulse {
+            0%, 100% { background-color: #fffaf0; }
+            50% { background-color: var(--high); }
+        }
 
-.priority-high {
-    animation: priorityBlink 1.2s infinite;
-}
+        @keyframes priorityUrgentPulse {
+            0%, 100% { background-color: #fff5f5; }
+            50% { background-color: var(--urgent); }
+        }
 
-.priority-urgent {
-    animation: priorityBlink 0.5s infinite;
-}
+        .priority-high td {
+            animation: priorityHighPulse 1.8s infinite;
+        }
 
-/* Add this to style section */
-.row-completed {
-    text-decoration: line-through;
-    color: #999999;
-    background-color: #f9f9f9;
-}
+        .priority-urgent td {
+            animation: priorityUrgentPulse 1.1s infinite;
+        }
 
-/* Green styling for Signed or Completed rows */
-.row-signed-completed {
-    background-color: #e8f5e9 !important;
-}
+        .row-signed-completed td,
+        .row-signed-completed input,
+        .row-signed-completed select {
+            background-color: var(--complete) !important;
+            color: #758078 !important;
+            font-weight: 500;
+            text-decoration: line-through;
+        }
 
-.row-signed-completed td,
-.row-signed-completed input,
-.row-signed-completed select {
-    background-color: #e8f5e9 !important;
-    color: #777777 !important;
-    font-weight: 500;
-    text-decoration: line-through;
-}
+        .row-status-icon {
+            display: inline-block;
+            min-width: 18px;
+            margin-right: 3px;
+            text-align: center;
+            text-decoration: none !important;
+        }
 
-.row-status-icon {
-    display: inline-block;
-    min-width: 18px;
-    margin-right: 3px;
-    text-align: center;
-    text-decoration: none !important;
-}
+        .row-lock-icon {
+            color: var(--firm-green);
+        }
 
-.row-lock-icon {
-    color: #1b5e20;
-}
+        .row-priority-flag {
+            color: var(--firm-red);
+        }
 
-.row-priority-flag {
-    color: #b00020;
-}
+        .footer-ticker {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            border-top: 1px solid var(--line);
+            color: #44514a;
+            font-size: 12px;
+            padding: 8px 0;
+            box-shadow: 0 -4px 16px rgba(17, 35, 28, 0.08);
+            z-index: 9;
+        }
+
+        .ticker-content {
+            padding: 0 22px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 900px) {
+            .navbar {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .brand-header-left {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .center-company-title {
+                border-left: 0;
+                padding-left: 0;
+            }
+
+            .workflow-summary {
+                grid-template-columns: repeat(2, minmax(140px, 1fr));
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="navbar">
     <div class="brand-header-left">
-        <div class="logo-text"><strong>BOOKKEEPING</strong> Workflow</div>
+        <div class="logo-text"><strong>CTC</strong> Accounting Workflow</div>
         <div class="center-company-title">
             Calgary Tax Consulting 
-            <span class="sub-corp">| Narinder Singh Professional Corporation | ACCPOL ACCOUNTING INC</span>
+            <span class="sub-corp">| Tax Returns | Bookkeeping | Year-End Accounts | GST &amp; Corporate Compliance</span>
         </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px; margin-right:15px;">
@@ -389,9 +431,25 @@
         <div class="sub-txt">Calgary Tax Consulting</div>
     </div>
 </div>
-
-
-<div class="workspace-container"></div>
+<div class="workspace-container">
+    <div class="workflow-summary" aria-label="Workflow summary">
+        <div class="summary-pill">
+            <span class="summary-label">Active Files</span>
+            <span class="summary-value" id="summary-active">0</span>
+        </div>
+        <div class="summary-pill priority">
+            <span class="summary-label">High / Urgent</span>
+            <span class="summary-value" id="summary-priority">0</span>
+        </div>
+        <div class="summary-pill complete">
+            <span class="summary-label">Completed</span>
+            <span class="summary-value" id="summary-completed">0</span>
+        </div>
+        <div class="summary-pill">
+            <span class="summary-label">Assigned</span>
+            <span class="summary-value" id="summary-assigned">0</span>
+        </div>
+    </div>
     <div class="pagination-ribbon">
         <div class="pagination-container">
             
@@ -520,6 +578,7 @@
             </tbody>
         </table>
     </div>
+</div>
 
 <script>
 
@@ -559,6 +618,26 @@
     function isCompletedStatus(statusValue) {
         const normalizedStatus = (statusValue || '').toString().trim().toLowerCase();
         return normalizedStatus === 'signed' || normalizedStatus === 'completed';
+    }
+
+    function updateWorkflowSummary() {
+        const rows = Object.values(storedData).filter(row => row && (row.client || row.jobId || row.allocTo || row.status));
+        const completed = rows.filter(row => isCompletedStatus(row.status)).length;
+        const priority = rows.filter(row => row.priority === 'High' || row.priority === 'Urgent').length;
+        const assigned = rows.filter(row => row.allocTo && !isCompletedStatus(row.status)).length;
+        const active = rows.length - completed;
+
+        const values = {
+            'summary-active': active,
+            'summary-priority': priority,
+            'summary-completed': completed,
+            'summary-assigned': assigned
+        };
+
+        Object.entries(values).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        });
     } 
 
     function drawTrackingInterface() {
@@ -715,6 +794,7 @@ const isFinished = isCompletedStatus(rowData.status);
         }
         
         tableBodyElement.innerHTML = htmlBuffer;
+        updateWorkflowSummary();
     }
 
     function handleFilterChange(field, value) {
@@ -723,7 +803,7 @@ const isFinished = isCompletedStatus(rowData.status);
     }
 
     function sortByField(field) {
-        ['client','jobId','type','allocDate','expDate','allocTo','status'].forEach(f => {
+        ['client','jobId','yearEnd','type','allocDate','expDate','craAuth','gstStatus','allocTo','status','priority'].forEach(f => {
             const el = document.getElementById(`sort-${f}`);
             if(el) el.innerHTML = '&#9650;&#9660;';
         });
@@ -939,13 +1019,17 @@ updateClock();
 </script>
 <div class="footer-ticker">
     <div class="ticker-content">
-        &nbsp;&nbsp;Welcome to the Bookkeeping Workflow System. 
-        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
-        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
-        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
+        &nbsp;&nbsp;Calgary Tax Consulting workflow board. 
+        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Keep client records current before tax and GST deadlines. 
+        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Year-end accounts and corporate returns should be monitored until signed or completed.
+        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Pending reminders continue for assigned files until completion.
     </div>
 </div></body>
 </html>
+
+
+
+
 
 
 
