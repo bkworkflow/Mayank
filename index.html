@@ -371,7 +371,7 @@
 </div>
 
 
-<div class="workspace-container">
+<div class="workspace-container"></div>
     <div class="pagination-ribbon">
         <div class="pagination-container">
             
@@ -411,9 +411,9 @@
                     </th>
 <th>
                         <div class="th-content">
-                            <div class="th-label-row" onclick="sortByField('Year End')">
+                            <div class="th-label-row" onclick="sortByField('yearEnd')">
                                 <span>Year End</span>
-                                <span class="sort-trigger" id="sort-Year End">▲▼</span>
+                                <span class="sort-trigger" id="sort-yearEnd">▲▼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('yearEnd', this.value)">
                         </div>
@@ -482,6 +482,7 @@
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('status', this.value)">
                         </div>
+                    </th>
                      <th>
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('Priority')">
@@ -501,7 +502,6 @@
     </div>
 
 <script>
-
 
     const tableBodyElement = document.getElementById('trackingTableBody');
     const TOTAL_LINES_LIMIT = 200;
@@ -610,6 +610,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
                                 <option value="2026" ${rowData.yearEndYear === '2026' ? 'selected' : ''}>2026</option>
                             </select>
                             </div>
+                       </td>
 <td>
                             <select class="data-input" data-field="type">
                                 <option value="" ${rowData.type === '' ? 'selected' : ''}>Select...</option>
@@ -873,13 +874,11 @@ setInterval(updateClock, 1000);
 updateClock();
 </script>
 <div class="footer-ticker">
-    <marquee scrollamount="6">
+    <div class="ticker-content">
         &nbsp;&nbsp;Welcome to the Bookkeeping Workflow System. 
         &nbsp;&nbsp;•&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
-&nbsp;&nbsp;•&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
-&nbsp;&nbsp;•&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
-               </marquee>
-
-</div>
-</body>
+        &nbsp;&nbsp;•&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
+        &nbsp;&nbsp;•&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
+    </div>
+</div></body>
 </html>
