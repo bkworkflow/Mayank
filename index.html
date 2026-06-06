@@ -361,7 +361,10 @@
             <span class="sub-corp">| Narinder Singh Professional Corporation | ACCPOL ACCOUNTING INC</span>
         </div>
     </div>
-    <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #800000; margin-right: 15px;"></div>
+    <div style="display:flex; align-items:center; gap:12px; margin-right:15px;">
+        <div id="save-status" style="font-size: 12px; font-weight: 600; color: #555555; min-width: 120px; text-align: right;">Ready</div>
+        <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #800000;"></div>
+    </div>
 
     <div class="top-right-logo">
 
@@ -526,7 +529,15 @@
 
     let storedData = {};
     let activeFilters = { client: '', jobId: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '' };
-    let activeSort = { field: null, direction: 'asc' }; 
+    let activeSort = { field: null, direction: 'asc' };
+
+    function setSyncStatus(message, color = '#555555') {
+        const statusElement = document.getElementById('save-status');
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.style.color = color;
+        }
+    } 
 
     function drawTrackingInterface() {
         let htmlBuffer = '';
@@ -836,27 +847,56 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
     }
 
     async function saveRowToServer(rowIndex, rowData) {
+        const numericRowId = Number(rowIndex);
+        const cleanRowData = { ...rowData };
+        ['allocDate', 'expDate'].forEach(field => {
+            if (cleanRowData[field] === '') cleanRowData[field] = null;
+        });
+        setSyncStatus('Saving...', '#0076a8');
+
         const { error } = await supabaseClient
             .from('workflow')
-            .upsert({ id: rowIndex, ...rowData });
-        if (error) console.error('Error saving to Supabase:', error);
-    }
+            .upsert({ id: numericRowId, ...cleanRowData }, { onConflict: 'id' });
 
+        if (error) {
+            setSyncStatus('Save failed', '#b00020');
+            console.error('Error saving to Supabase:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
+            alert(`Save failed: ${error.message}`);
+            return false;
+        }
+
+        setSyncStatus('Saved', '#1d5217');
+        return true;
+    }
     async function loadDataFromServer() {
+        setSyncStatus('Loading...', '#0076a8');
         const { data, error } = await supabaseClient
             .from('workflow')
-            .select('*');
+            .select('*')
+            .order('id', { ascending: true });
         if (error) {
-            console.error('Error loading data:', error);
+            setSyncStatus('Load failed', '#b00020');
+            console.error('Error loading data from Supabase:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
             return;
         }
         if (data) {
+            storedData = {};
             data.forEach(row => { storedData[row.id] = row; });
         }
         drawTrackingInterface();
         auditOverdueMilestones();
+        setSyncStatus('Loaded', '#1d5217');
     }
-
     loadDataFromServer();
     // Refresh shared data every 30 seconds so all users see each other's changes
     setInterval(loadDataFromServer, 30000);
@@ -882,3 +922,5 @@ updateClock();
     </div>
 </div></body>
 </html>
+
+
