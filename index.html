@@ -14,8 +14,8 @@
 
     <style>
         :root {
-            --firm-green: #135f3b;
-            --firm-green-dark: #0a3f28;
+            --firm-green: #0ea5e9;
+            --firm-green-dark: #0369a1;
             --firm-red: #b3261e;
             --firm-gold: #c9952f;
             --ink: #15231d;
@@ -25,7 +25,7 @@
             --panel-soft: #f7faf8;
             --page: #eef3f0;
             --header: #eef6f1;
-            --focus: #1473a6;
+            --focus: #0284c7;
             --complete: #e6f4ea;
             --urgent: #ffe1e1;
             --high: #fff1cf;
@@ -39,7 +39,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background:
-                linear-gradient(180deg, rgba(19, 95, 59, 0.08), rgba(238, 243, 240, 0) 240px),
+                linear-gradient(180deg, rgba(14, 165, 233, 0.10), rgba(238, 243, 240, 0) 240px),
                 var(--page);
             color: var(--ink);
             margin: 0;
@@ -1232,7 +1232,7 @@ const isFinished = isCompletedStatus(rowData.status);
             return false;
         }
 
-        setSyncStatus('Saved', '#1d5217');
+        setSyncStatus('Saved', '#0369a1');
         return true;
     }
     async function loadDataFromServer() {
@@ -1258,7 +1258,7 @@ const isFinished = isCompletedStatus(rowData.status);
         }
         drawTrackingInterface();
         auditOverdueMilestones();
-        setSyncStatus('Loaded', '#1d5217');
+        setSyncStatus('Loaded', '#0369a1');
     }
     initializeAuth();
     // Refresh shared data every 30 seconds so all users see each other's changes
