@@ -1,4 +1,4 @@
-
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -395,7 +395,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('client')">
                                 <span>Client Name</span>
-                                <span class="sort-trigger" id="sort-client">▲▼</span>
+                                <span class="sort-trigger" id="sort-client">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('client', this.value)">
                         </div>
@@ -404,7 +404,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('jobId')">
                                 <span>Job ID</span>
-                                <span class="sort-trigger" id="sort-jobId">▲▼</span>
+                                <span class="sort-trigger" id="sort-jobId">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('jobId', this.value)">
                         </div>
@@ -413,7 +413,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('yearEnd')">
                                 <span>Year End</span>
-                                <span class="sort-trigger" id="sort-yearEnd">▲▼</span>
+                                <span class="sort-trigger" id="sort-yearEnd">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('yearEnd', this.value)">
                         </div>
@@ -423,7 +423,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('type')">
                                 <span>Type</span>
-                                <span class="sort-trigger" id="sort-type">▲▼</span>
+                                <span class="sort-trigger" id="sort-type">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('type', this.value)">
                         </div>
@@ -432,7 +432,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('allocDate')">
                                 <span>Allc. Date</span>
-                                <span class="sort-trigger" id="sort-allocDate">▲▼</span>
+                                <span class="sort-trigger" id="sort-allocDate">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('allocDate', this.value)">
                         </div>
@@ -441,7 +441,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('expDate')">
                                 <span>Expt. Date</span>
-                                <span class="sort-trigger" id="sort-expDate">▲▼</span>
+                                <span class="sort-trigger" id="sort-expDate">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('expDate', this.value)">
                         </div>
@@ -450,7 +450,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('CRA Auth.')">
                                 <span>CRA Auth.</span>
-                                <span class="sort-trigger" id="sort-craAuth">▲▼</span>
+                                <span class="sort-trigger" id="sort-craAuth">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('craAuth', this.value)">
                         </div>
@@ -459,7 +459,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('GST Status')">
                                 <span>GST Status</span>
-                                <span class="sort-trigger" id="sort-gstStatus">▲▼</span>
+                                <span class="sort-trigger" id="sort-gstStatus">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('gstStatus', this.value)">
                         </div>
@@ -469,7 +469,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('allocTo')">
                                 <span>Alloctd. To</span>
-                                <span class="sort-trigger" id="sort-allocTo">▲▼</span>
+                                <span class="sort-trigger" id="sort-allocTo">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('allocTo', this.value)">
                         </div>
@@ -478,7 +478,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('status')">
                                 <span>Change Status</span>
-                                <span class="sort-trigger" id="sort-status">▲▼</span>
+                                <span class="sort-trigger" id="sort-status">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('status', this.value)">
                         </div>
@@ -487,7 +487,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('Priority')">
                                 <span>Priority</span>
-                                <span class="sort-trigger" id="sort-priority">▲▼</span>
+                                <span class="sort-trigger" id="sort-priority">â–²â–¼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('priority', this.value)">
                         </div>
@@ -518,7 +518,7 @@
     const EMAILJS_SERVICE_ID = "service_kfiehhp";
     const EMAILJS_TEMPLATE_ID = "template_ywav7fj";
     const EMAILJS_PUBLIC_KEY = "RzHAQ1CzyEimky9wP";
-    const supabase = window.supabase.createClient('https://grwgobmzgxunoekphkcz.supabase.co', 'sb_publishable_3BIYKo0MzVzGfAFNLxwsBw_wb7ZtvJG');
+     const supabaseClient = window.supabase.createClient('https://grwgobmzgxunoekphkcz.supabase.co', 'sb_publishable_3BIYKo0MzVzGfAFNLxwsBw_wb7ZtvJG');
 
     if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
         emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -575,7 +575,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
                             <div class="chk-col">
                                 <input type="checkbox" style="margin:0;">
                                 <span style="color: #777777;">
-    ${rowData.priority === 'High' || rowData.priority === 'Urgent' ? '🚩 ' : ''}
+    ${rowData.priority === 'High' || rowData.priority === 'Urgent' ? 'ðŸš© ' : ''}
     ${index + 1}
 </span>
                             </div>
@@ -693,7 +693,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
     function sortByField(field) {
         ['client','jobId','type','allocDate','expDate','allocTo','status'].forEach(f => {
             const el = document.getElementById(`sort-${f}`);
-            if(el) el.textContent = '▲▼';
+            if(el) el.textContent = 'â–²â–¼';
         });
 
         if (activeSort.field === field) {
@@ -705,7 +705,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
 
         const indicator = document.getElementById(`sort-${field}`);
         if(indicator) {
-            indicator.textContent = activeSort.direction === 'asc' ? '▲' : '▼';
+            indicator.textContent = activeSort.direction === 'asc' ? 'â–²' : 'â–¼';
         }
 
         drawTrackingInterface();
@@ -836,14 +836,14 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
     }
 
     async function saveRowToServer(rowIndex, rowData) {
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('workflow')
             .upsert({ id: rowIndex, ...rowData });
         if (error) console.error('Error saving to Supabase:', error);
     }
 
     async function loadDataFromServer() {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('workflow')
             .select('*');
         if (error) {
@@ -876,9 +876,9 @@ updateClock();
 <div class="footer-ticker">
     <div class="ticker-content">
         &nbsp;&nbsp;Welcome to the Bookkeeping Workflow System. 
-        &nbsp;&nbsp;•&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
-        &nbsp;&nbsp;•&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
-        &nbsp;&nbsp;•&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
+        &nbsp;&nbsp;â€¢&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
+        &nbsp;&nbsp;â€¢&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
+        &nbsp;&nbsp;â€¢&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
     </div>
 </div></body>
 </html>
