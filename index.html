@@ -18,18 +18,18 @@
             --firm-green-dark: #0369a1;
             --firm-red: #b3261e;
             --firm-gold: #c9952f;
-            --ink: #15231d;
-            --muted: #68736d;
-            --line: #d7ded9;
+            --ink: #102333;
+            --muted: #607485;
+            --line: #cfe5f2;
             --panel: #ffffff;
-            --panel-soft: #f7faf8;
-            --page: #eef3f0;
-            --header: #eef6f1;
+            --panel-soft: #f5fbff;
+            --page: #edf8fd;
+            --header: #e6f5fd;
             --focus: #0284c7;
-            --complete: #e6f4ea;
+            --complete: #e0f2fe;
             --urgent: #ffe1e1;
             --high: #fff1cf;
-            --shadow: 0 10px 28px rgba(17, 35, 28, 0.10);
+            --shadow: 0 10px 28px rgba(12, 74, 110, 0.12);
         }
 
         * {
@@ -39,7 +39,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background:
-                linear-gradient(180deg, rgba(14, 165, 233, 0.10), rgba(238, 243, 240, 0) 240px),
+                linear-gradient(180deg, rgba(14, 165, 233, 0.16), rgba(237, 248, 253, 0) 240px),
                 var(--page);
             color: var(--ink);
             margin: 0;
@@ -56,7 +56,7 @@
             align-items: center;
             gap: 18px;
             border-bottom: 1px solid var(--line);
-            box-shadow: 0 3px 16px rgba(17, 35, 28, 0.08);
+            box-shadow: 0 3px 16px rgba(12, 74, 110, 0.10);
             position: sticky;
             top: 0;
             z-index: 10;
@@ -72,7 +72,7 @@
         .logo-text {
             font-size: 23px;
             font-weight: 650;
-            color: #425048;
+            color: #334e60;
             white-space: nowrap;
         }
 
@@ -84,7 +84,7 @@
         .center-company-title {
             font-size: 13px;
             font-weight: 700;
-            color: #56645d;
+            color: #526b7c;
             border-left: 1px solid var(--line);
             padding-left: 18px;
             text-transform: uppercase;
@@ -99,7 +99,7 @@
         .center-company-title .sub-corp {
             font-size: 13px;
             font-weight: 650;
-            color: #697770;
+            color: #607485;
         }
 
         #save-status {
@@ -114,7 +114,7 @@
         }
 
         .top-right-logo {
-            background: linear-gradient(180deg, #ffffff, #f6faf7);
+            background: linear-gradient(180deg, #ffffff, #f3faff);
             border: 1px solid var(--line);
             padding: 8px 18px;
             border-radius: 6px;
@@ -157,7 +157,7 @@
             border-left: 4px solid var(--firm-green);
             border-radius: 7px;
             padding: 10px 12px;
-            box-shadow: 0 2px 10px rgba(17, 35, 28, 0.05);
+            box-shadow: 0 2px 10px rgba(12, 74, 110, 0.07);
         }
 
         .summary-pill.priority {
@@ -185,8 +185,126 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .pagination-ribbon {
+        .pagination-ribbon,
+        .monitoring-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(12, 74, 110, 0.07);
+        }
+
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .pagination-container button,
+        .monitoring-panel button {
+            border: 0;
+            border-radius: 6px;
+            background: var(--firm-green);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 750;
+            padding: 7px 11px;
+            font-size: 12px;
+        }
+
+        .pagination-container button:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .pagination-status {
+            color: var(--muted);
+            font-weight: 700;
+            margin-left: auto;
+        }
+
+        .monitoring-panel {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .monitoring-notice {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .activity-dashboard {
             display: none;
+            width: 100%;
+            border-top: 1px solid var(--line);
+            padding-top: 10px;
+        }
+
+        .activity-dashboard.visible {
+            display: block;
+        }
+
+        .activity-dashboard h2 {
+            margin: 0 0 8px;
+            color: var(--firm-green-dark);
+            font-size: 15px;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(160px, 1fr));
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .activity-stat {
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            padding: 9px 10px;
+            background: var(--panel-soft);
+        }
+
+        .activity-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .activity-stat strong {
+            display: block;
+            margin-top: 3px;
+            color: var(--ink);
+            font-size: 17px;
+        }
+
+        .activity-list {
+            display: grid;
+            gap: 6px;
+            max-height: 170px;
+            overflow: auto;
+        }
+
+        .activity-item {
+            display: grid;
+            grid-template-columns: 140px 150px 1fr;
+            gap: 8px;
+            border-bottom: 1px solid #e5f2f8;
+            padding: 6px 0;
+            color: var(--ink);
+            font-size: 12px;
+        }
+
+        .activity-item span {
+            color: var(--muted);
         }
 
         .datagrid-overflow-container {
@@ -213,7 +331,7 @@
             font-weight: 750;
             padding: 11px 10px 9px;
             border-bottom: 1px solid var(--line);
-            border-right: 1px solid #e3e9e5;
+            border-right: 1px solid #d8ebf5;
             vertical-align: middle;
             user-select: none;
             position: sticky;
@@ -248,7 +366,7 @@
             align-items: center;
             font-size: 9px;
             line-height: 1;
-            color: #8ba197;
+            color: #7ca1b7;
         }
 
         .th-label-row:hover {
@@ -257,7 +375,7 @@
 
         .header-filter-input {
             width: 100%;
-            border: 1px solid #cfd9d3;
+            border: 1px solid #c8dfec;
             border-radius: 5px;
             padding: 4px 7px;
             font-size: 11px;
@@ -267,23 +385,23 @@
 
         .header-filter-input:focus {
             border-color: var(--focus);
-            outline: 2px solid rgba(20, 115, 166, 0.13);
+            outline: 2px solid rgba(2, 132, 199, 0.16);
         }
 
         .datagrid-table td {
             padding: 6px 8px;
-            border-bottom: 1px solid #edf1ee;
-            border-right: 1px solid #f1f4f2;
-            color: #29342f;
+            border-bottom: 1px solid #e5f2f8;
+            border-right: 1px solid #edf7fb;
+            color: #102333;
             background: #ffffff;
         }
 
         .datagrid-table tbody tr:nth-child(even) td {
-            background-color: #fbfdfc;
+            background-color: #f8fcff;
         }
 
         .datagrid-table tbody tr:hover td {
-            background-color: #f4faf6;
+            background-color: #eff9fe;
         }
 
         .datagrid-table td input[type="text"],
@@ -294,7 +412,7 @@
             background: transparent;
             padding: 5px 6px;
             font-size: 12px;
-            color: #25332d;
+            color: #102333;
             border-radius: 5px;
             min-height: 28px;
         }
@@ -304,7 +422,7 @@
         .datagrid-table td select:focus {
             border-color: var(--focus);
             background: #ffffff;
-            outline: 2px solid rgba(20, 115, 166, 0.12);
+            outline: 2px solid rgba(2, 132, 199, 0.15);
         }
 
         .chk-col {
@@ -317,10 +435,10 @@
             width: 100%;
             padding: 5px 7px;
             border-radius: 5px;
-            border: 1px solid #cfd9d3;
+            border: 1px solid #c8dfec;
             font-size: 11px;
             background: #ffffff;
-            color: #25332d;
+            color: #102333;
         }
 
         @keyframes priorityHighPulse {
@@ -345,7 +463,7 @@
         .row-signed-completed input,
         .row-signed-completed select {
             background-color: var(--complete) !important;
-            color: #758078 !important;
+            color: #607485 !important;
             font-weight: 500;
             text-decoration: line-through;
         }
@@ -373,10 +491,10 @@
             bottom: 0;
             background: #ffffff;
             border-top: 1px solid var(--line);
-            color: #44514a;
+            color: #526b7c;
             font-size: 12px;
             padding: 8px 0;
-            box-shadow: 0 -4px 16px rgba(17, 35, 28, 0.08);
+            box-shadow: 0 -4px 16px rgba(12, 74, 110, 0.10);
             z-index: 9;
         }
 
@@ -539,7 +657,7 @@
             <button type="button" onclick="handleLogout()">Logout</button>
         </div>
         <div id="save-status" style="font-size: 12px; font-weight: 600; color: #555555; min-width: 120px; text-align: right;">Ready</div>
-        <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #800000;"></div>
+        <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #0369a1;"></div>
     </div>
 
     <div class="top-right-logo">
@@ -569,7 +687,35 @@
     </div>
     <div class="pagination-ribbon">
         <div class="pagination-container">
-            
+            <button type="button" id="prev-page-button" onclick="changePage(-1)">Previous</button>
+            <button type="button" id="next-page-button" onclick="changePage(1)">Next</button>
+            <span class="pagination-status" id="pagination-status">Rows 1-100 of 1000</span>
+        </div>
+    </div>
+
+    <div class="monitoring-panel">
+        <div class="monitoring-notice">
+            Activity monitoring is enabled for this workflow. The system records login presence and file changes so the master login can review live productivity and accountability.
+        </div>
+        <div class="activity-dashboard" id="activity-dashboard">
+            <h2>Live Productivity Monitor</h2>
+            <div class="activity-grid">
+                <div class="activity-stat">
+                    <span>Online Now</span>
+                    <strong id="activity-online-count">0</strong>
+                </div>
+                <div class="activity-stat">
+                    <span>Changes Today</span>
+                    <strong id="activity-change-count">0</strong>
+                </div>
+                <div class="activity-stat">
+                    <span>Recent Updates</span>
+                    <strong id="activity-recent-count">0</strong>
+                </div>
+            </div>
+            <div class="activity-list" id="activity-list">
+                <div class="activity-item"><span>Waiting</span><span>Activity</span><strong>No activity loaded yet.</strong></div>
+            </div>
         </div>
     </div>
 
@@ -700,7 +846,8 @@
 <script>
 
     const tableBodyElement = document.getElementById('trackingTableBody');
-    const TOTAL_LINES_LIMIT = 200;
+    const TOTAL_LINES_LIMIT = 1000;
+    const ROWS_PER_PAGE = 100;
     const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
 
     const TEAM_EMAIL_DIRECTORY = {
@@ -733,10 +880,47 @@
     let activeFilters = { client: '', jobId: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '' };
     let activeSort = { field: null, direction: 'asc' };
     let currentUserProfile = null;
+    let currentPage = 1;
+    let latestActivityRows = [];
     const allocationEmailLocks = new Set();
+    const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
 
     function normalizeEmail(email) {
         return (email || '').toString().trim().toLowerCase();
+    }
+
+    function getIndiaDateParts() {
+        const parts = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Kolkata',
+            weekday: 'long',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            hour12: false
+        }).formatToParts(new Date());
+
+        const values = {};
+        parts.forEach(part => {
+            if (part.type !== 'literal') values[part.type] = part.value;
+        });
+        return values;
+    }
+
+    async function enforceSaturdayLogout() {
+        if (!currentUserProfile) return;
+
+        const indiaTime = getIndiaDateParts();
+        const indiaDateKey = `${indiaTime.year}-${indiaTime.month}-${indiaTime.day}`;
+        const indiaHour = Number(indiaTime.hour);
+        const alreadyLoggedOutDate = localStorage.getItem(SATURDAY_LOGOUT_STORAGE_KEY);
+
+        if (indiaTime.weekday === 'Saturday' && indiaHour >= 7 && alreadyLoggedOutDate !== indiaDateKey) {
+            localStorage.setItem(SATURDAY_LOGOUT_STORAGE_KEY, indiaDateKey);
+            await recordActivity('logout');
+            await supabaseClient.auth.signOut();
+            showLoggedOutState('Weekly logout completed. Please log in again.');
+        }
     }
 
     function getLoginProfile(user) {
@@ -756,6 +940,148 @@
         return (rowData.allocTo || '') === currentUserProfile.staffName;
     }
 
+    function updatePaginationControls(totalRows, firstRowNumber, lastRowNumber, totalPages) {
+        const statusElement = document.getElementById('pagination-status');
+        const previousButton = document.getElementById('prev-page-button');
+        const nextButton = document.getElementById('next-page-button');
+
+        if (statusElement) {
+            if (totalRows === 0) {
+                statusElement.textContent = 'No matching rows';
+            } else {
+                statusElement.textContent = `Rows ${firstRowNumber}-${lastRowNumber} of ${totalRows} | Page ${currentPage} of ${totalPages}`;
+            }
+        }
+
+        if (previousButton) previousButton.disabled = currentPage <= 1;
+        if (nextButton) nextButton.disabled = currentPage >= totalPages;
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        if (currentPage < 1) currentPage = 1;
+        drawTrackingInterface();
+    }
+
+    function formatActivityTime(isoValue) {
+        if (!isoValue) return '';
+        return new Date(isoValue).toLocaleString([], {
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function describeActivity(row) {
+        if (row.action_type === 'login') return 'Logged in';
+        if (row.action_type === 'logout') return 'Logged out';
+        if (row.action_type === 'heartbeat') return 'Active in workflow';
+        if (row.action_type === 'edit') {
+            const fileLabel = [row.client_name, row.job_id].filter(Boolean).join(' / ') || `Row ${Number(row.row_id) + 1}`;
+            return `${row.field_name || 'Field'} changed on ${fileLabel}: "${row.old_value || ''}" to "${row.new_value || ''}"`;
+        }
+        return row.action_type || 'Activity';
+    }
+
+    function renderActivityDashboard() {
+        const dashboard = document.getElementById('activity-dashboard');
+        if (!dashboard) return;
+
+        if (!isMasterUser()) {
+            dashboard.classList.remove('visible');
+            return;
+        }
+
+        dashboard.classList.add('visible');
+        const now = Date.now();
+        const todayKey = new Date().toISOString().split('T')[0];
+        const onlineEmails = new Set(
+            latestActivityRows
+                .filter(row => row.action_type === 'heartbeat' && row.created_at && now - new Date(row.created_at).getTime() <= 125000)
+                .map(row => row.user_email)
+                .filter(Boolean)
+        );
+        const todayChanges = latestActivityRows.filter(row => row.action_type === 'edit' && (row.created_at || '').startsWith(todayKey)).length;
+        const recentUpdates = latestActivityRows.filter(row => row.action_type === 'edit').length;
+
+        const onlineElement = document.getElementById('activity-online-count');
+        const changesElement = document.getElementById('activity-change-count');
+        const recentElement = document.getElementById('activity-recent-count');
+        const listElement = document.getElementById('activity-list');
+
+        if (onlineElement) onlineElement.textContent = onlineEmails.size;
+        if (changesElement) changesElement.textContent = todayChanges;
+        if (recentElement) recentElement.textContent = recentUpdates;
+
+        if (listElement) {
+            const rowsToShow = latestActivityRows.filter(row => row.action_type !== 'heartbeat').slice(0, 25);
+            if (rowsToShow.length === 0) {
+                listElement.innerHTML = '<div class="activity-item"><span>Waiting</span><span>Activity</span><strong>No activity yet.</strong></div>';
+            } else {
+                listElement.innerHTML = rowsToShow.map(row => `
+                    <div class="activity-item">
+                        <span>${escapeInputText(formatActivityTime(row.created_at))}</span>
+                        <span>${escapeInputText(row.staff_name || row.user_email || '')}</span>
+                        <strong>${escapeInputText(describeActivity(row))}</strong>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    async function recordActivity(actionType, details = {}) {
+        if (!currentUserProfile) return;
+
+        const activityPayload = {
+            action_type: actionType,
+            user_email: currentUserProfile.email,
+            staff_name: currentUserProfile.staffName,
+            row_id: details.rowId ?? null,
+            field_name: details.fieldName || null,
+            old_value: details.oldValue === undefined || details.oldValue === null ? null : String(details.oldValue),
+            new_value: details.newValue === undefined || details.newValue === null ? null : String(details.newValue),
+            client_name: details.clientName || null,
+            job_id: details.jobId || null
+        };
+
+        const { error } = await supabaseClient
+            .from('activity_log')
+            .insert(activityPayload);
+
+        if (error) {
+            console.warn('Activity monitoring could not save. Create the activity_log table in Supabase.', error.message);
+        }
+    }
+
+    async function sendActivityHeartbeat() {
+        await recordActivity('heartbeat');
+        if (isMasterUser()) await loadActivityLog();
+    }
+
+    async function loadActivityLog() {
+        if (!isMasterUser()) {
+            latestActivityRows = [];
+            renderActivityDashboard();
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from('activity_log')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(200);
+
+        if (error) {
+            console.warn('Activity monitor load failed. Create the activity_log table in Supabase.', error.message);
+            latestActivityRows = [];
+        } else {
+            latestActivityRows = data || [];
+        }
+
+        renderActivityDashboard();
+    }
+
     async function applyLoggedInUser(user) {
         const profile = getLoginProfile(user);
         if (!profile) {
@@ -771,6 +1097,9 @@
         }
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
+        await enforceSaturdayLogout();
+        await recordActivity('login');
+        await sendActivityHeartbeat();
     }
 
     function showLoggedOutState(message = '') {
@@ -784,6 +1113,8 @@
             loginButton.disabled = false;
             loginButton.textContent = 'Log in';
         }
+        latestActivityRows = [];
+        renderActivityDashboard();
         setSyncStatus('Ready');
     }
 
@@ -809,6 +1140,7 @@
     }
 
     async function handleLogout() {
+        await recordActivity('logout');
         await supabaseClient.auth.signOut();
         showLoggedOutState('');
     }
@@ -831,6 +1163,9 @@
                 showLoggedOutState('');
             }
         });
+
+        setInterval(enforceSaturdayLogout, 60000);
+        setInterval(sendActivityHeartbeat, 60000);
     }
 
     function setSyncStatus(message, color = '#555555') {
@@ -898,10 +1233,21 @@
             });
         }
 
-        if (indexList.length === 0) {
+        const totalRows = indexList.length;
+        const totalPages = Math.max(1, Math.ceil(totalRows / ROWS_PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const pageStartIndex = (currentPage - 1) * ROWS_PER_PAGE;
+        const pageEndIndex = pageStartIndex + ROWS_PER_PAGE;
+        const pageIndexList = indexList.slice(pageStartIndex, pageEndIndex);
+        const firstRowNumber = totalRows === 0 ? 0 : pageStartIndex + 1;
+        const lastRowNumber = totalRows === 0 ? 0 : pageStartIndex + pageIndexList.length;
+
+        if (pageIndexList.length === 0) {
             htmlBuffer = `<tr><td colspan="12" style="text-align: center; padding: 20px; color: #777777;">No rows match your login or active filters.</td></tr>`;
         } else {
-            indexList.forEach(index => {
+            pageIndexList.forEach(index => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
 const isFinished = isCompletedStatus(rowData.status);
                 htmlBuffer += `
@@ -1022,10 +1368,12 @@ const isFinished = isCompletedStatus(rowData.status);
         
         tableBodyElement.innerHTML = htmlBuffer;
         updateWorkflowSummary();
+        updatePaginationControls(totalRows, firstRowNumber, lastRowNumber, totalPages);
     }
 
     function handleFilterChange(field, value) {
         activeFilters[field] = value;
+        currentPage = 1;
         drawTrackingInterface();
     }
 
@@ -1041,6 +1389,7 @@ const isFinished = isCompletedStatus(rowData.status);
             activeSort.field = field;
             activeSort.direction = 'asc';
         }
+        currentPage = 1;
 
         const indicator = document.getElementById(`sort-${field}`);
         if(indicator) {
@@ -1070,6 +1419,7 @@ const isFinished = isCompletedStatus(rowData.status);
 
         const historicalStatus = storedData[rowIndex] ? storedData[rowIndex].status : '';
         const historicalAllocTo = storedData[rowIndex] ? storedData[rowIndex].allocTo : '';
+        const historicalValue = storedData[rowIndex] ? storedData[rowIndex][fieldName] : '';
 
         if (!storedData[rowIndex]) {
             storedData[rowIndex] = {
@@ -1078,7 +1428,18 @@ const isFinished = isCompletedStatus(rowData.status);
         }
 
         storedData[rowIndex][fieldName] = fieldValue;
-        await saveRowToServer(rowIndex, storedData[rowIndex]);
+        const saveSucceeded = await saveRowToServer(rowIndex, storedData[rowIndex]);
+        if (saveSucceeded && historicalValue !== fieldValue) {
+            await recordActivity('edit', {
+                rowId: Number(rowIndex),
+                fieldName,
+                oldValue: historicalValue || '',
+                newValue: fieldValue || '',
+                clientName: storedData[rowIndex].client || '',
+                jobId: storedData[rowIndex].jobId || ''
+            });
+            if (isMasterUser()) await loadActivityLog();
+        }
         drawTrackingInterface();
 
         const currentStatus = storedData[rowIndex].status;
@@ -1258,6 +1619,7 @@ const isFinished = isCompletedStatus(rowData.status);
         }
         drawTrackingInterface();
         auditOverdueMilestones();
+        await loadActivityLog();
         setSyncStatus('Loaded', '#0369a1');
     }
     initializeAuth();
