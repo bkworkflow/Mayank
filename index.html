@@ -339,16 +339,33 @@
 
 /* Green styling for Signed or Completed rows */
 .row-signed-completed {
-    background-color: #e8f5e9 !important; /* Light green background */
+    background-color: #e8f5e9 !important;
 }
 
-.row-signed-completed input, 
+.row-signed-completed td,
+.row-signed-completed input,
 .row-signed-completed select {
-    background-color: #e8f5e9 !important; /* Match inputs to the row */
-    color: #1b5e20 !important;             /* Dark green text */
+    background-color: #e8f5e9 !important;
+    color: #777777 !important;
     font-weight: 500;
+    text-decoration: line-through;
 }
 
+.row-status-icon {
+    display: inline-block;
+    min-width: 18px;
+    margin-right: 3px;
+    text-align: center;
+    text-decoration: none !important;
+}
+
+.row-lock-icon {
+    color: #1b5e20;
+}
+
+.row-priority-flag {
+    color: #b00020;
+}
     </style>
 </head>
 <body>
@@ -398,7 +415,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('client')">
                                 <span>Client Name</span>
-                                <span class="sort-trigger" id="sort-client">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-client">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('client', this.value)">
                         </div>
@@ -407,7 +424,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('jobId')">
                                 <span>Job ID</span>
-                                <span class="sort-trigger" id="sort-jobId">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-jobId">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('jobId', this.value)">
                         </div>
@@ -416,7 +433,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('yearEnd')">
                                 <span>Year End</span>
-                                <span class="sort-trigger" id="sort-yearEnd">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-yearEnd">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('yearEnd', this.value)">
                         </div>
@@ -426,7 +443,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('type')">
                                 <span>Type</span>
-                                <span class="sort-trigger" id="sort-type">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-type">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('type', this.value)">
                         </div>
@@ -435,7 +452,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('allocDate')">
                                 <span>Allc. Date</span>
-                                <span class="sort-trigger" id="sort-allocDate">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-allocDate">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('allocDate', this.value)">
                         </div>
@@ -444,7 +461,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('expDate')">
                                 <span>Expt. Date</span>
-                                <span class="sort-trigger" id="sort-expDate">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-expDate">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('expDate', this.value)">
                         </div>
@@ -453,7 +470,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('CRA Auth.')">
                                 <span>CRA Auth.</span>
-                                <span class="sort-trigger" id="sort-craAuth">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-craAuth">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('craAuth', this.value)">
                         </div>
@@ -462,7 +479,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('GST Status')">
                                 <span>GST Status</span>
-                                <span class="sort-trigger" id="sort-gstStatus">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-gstStatus">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('gstStatus', this.value)">
                         </div>
@@ -472,7 +489,7 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('allocTo')">
                                 <span>Alloctd. To</span>
-                                <span class="sort-trigger" id="sort-allocTo">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-allocTo">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('allocTo', this.value)">
                         </div>
@@ -481,16 +498,16 @@
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('status')">
                                 <span>Change Status</span>
-                                <span class="sort-trigger" id="sort-status">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-status">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('status', this.value)">
                         </div>
                     </th>
                      <th>
                         <div class="th-content">
-                            <div class="th-label-row" onclick="sortByField('Priority')">
+                            <div class="th-label-row" onclick="sortByField('priority')">
                                 <span>Priority</span>
-                                <span class="sort-trigger" id="sort-priority">â–²â–¼</span>
+                                <span class="sort-trigger" id="sort-priority">&#9650;&#9660;</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('priority', this.value)">
                         </div>
@@ -537,6 +554,11 @@
             statusElement.textContent = message;
             statusElement.style.color = color;
         }
+    }
+
+    function isCompletedStatus(statusValue) {
+        const normalizedStatus = (statusValue || '').toString().trim().toLowerCase();
+        return normalizedStatus === 'signed' || normalizedStatus === 'completed';
     } 
 
     function drawTrackingInterface() {
@@ -575,7 +597,7 @@
         } else {
             indexList.forEach(index => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
-const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed';
+const isFinished = isCompletedStatus(rowData.status);
                 htmlBuffer += `
     <tr data-row-index="${index}" 
         class="${isFinished ? 'row-signed-completed' : ''} ${
@@ -586,8 +608,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
                             <div class="chk-col">
                                 <input type="checkbox" style="margin:0;">
                                 <span style="color: #777777;">
-    ${rowData.priority === 'High' || rowData.priority === 'Urgent' ? 'ðŸš© ' : ''}
-    ${index + 1}
+    ${isFinished ? '<span class="row-status-icon row-lock-icon">&#128274;</span>' : ''}${!isFinished && (rowData.priority === 'High' || rowData.priority === 'Urgent') ? '<span class="row-status-icon row-priority-flag">&#128681;</span>' : ''}${index + 1}
 </span>
                             </div>
                         </td>
@@ -676,7 +697,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
                                 <option value="Draft Sent" ${rowData.status === 'Draft Sent' ? 'selected' : ''}>Draft Sent</option>
                                 <option value="Final Sent" ${rowData.status === 'Final Sent' ? 'selected' : ''}>Final Sent</option>
                                 <option value="Not Replying" ${rowData.status === 'Not Replying' ? 'selected' : ''}>Not Replying</option>
-                                <option value="SIGNED" ${rowData.status === 'SIGNED' ? 'selected' : ''}>SIGNED</option>
+                                <option value="Signed" ${(rowData.status || '').toString().trim().toLowerCase() === 'signed' ? 'selected' : ''}>Signed</option>
                                 <option value="Completed" ${rowData.status === 'Completed' ? 'selected' : ''}>Completed</option>
                             </select>
                         </td>
@@ -704,7 +725,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
     function sortByField(field) {
         ['client','jobId','type','allocDate','expDate','allocTo','status'].forEach(f => {
             const el = document.getElementById(`sort-${f}`);
-            if(el) el.textContent = 'â–²â–¼';
+            if(el) el.innerHTML = '&#9650;&#9660;';
         });
 
         if (activeSort.field === field) {
@@ -716,7 +737,7 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
 
         const indicator = document.getElementById(`sort-${field}`);
         if(indicator) {
-            indicator.textContent = activeSort.direction === 'asc' ? 'â–²' : 'â–¼';
+            indicator.innerHTML = activeSort.direction === 'asc' ? '&#9650;' : '&#9660;';
         }
 
         drawTrackingInterface();
@@ -797,26 +818,19 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
 
         Object.keys(storedData).forEach(index => {
             const rowData = storedData[index];
-            if (!rowData || !rowData.allocDate || !rowData.expDate || !rowData.allocTo) return;
-            if (rowData.status === 'Completed' || rowData.status === 'SIGNED') return;
+            if (!rowData || !rowData.allocTo) return;
+            if (isCompletedStatus(rowData.status)) return;
+            if (!rowData.client && !rowData.jobId) return;
 
-            const allocDateObj = new Date(rowData.allocDate);
-            const expDateObj = new Date(rowData.expDate);
-
-            const timeDifference = expDateObj.getTime() - allocDateObj.getTime();
-            const dayDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-
-            if (dayDifference > 15) {
-                if (rowData.lastOverdueNotificationDate !== todayString) {
-                    dispatchOverdueEmailNotice(rowData, dayDifference);
-                    rowData.lastOverdueNotificationDate = todayString;
-                    saveRowToServer(index, rowData);
-                }
+            if (rowData.lastOverdueNotificationDate !== todayString) {
+                dispatchPendingReminderEmail(rowData);
+                rowData.lastOverdueNotificationDate = todayString;
+                saveRowToServer(index, rowData);
             }
         });
     }
 
-    function dispatchOverdueEmailNotice(rowDetails, spreadDays) {
+    function dispatchPendingReminderEmail(rowDetails) {
         const staffName = rowDetails.allocTo;
         const staffEmail = TEAM_EMAIL_DIRECTORY[staffName];
 
@@ -829,18 +843,17 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
             job_id: rowDetails.jobId || 'N/A',
             alloc_date: rowDetails.allocDate || 'Not Configured',
             exp_date: rowDetails.expDate || 'Not Configured',
-            job_status: `OVERDUE NOTICE (${spreadDays} Days Spread)`
+            job_status: 'PENDING REMINDER - Please take necessary action to avoid the deadline.'
         };
 
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, messageVariables)
             .then(() => {
-                console.log(`Overdue Alert Sent: ${staffName} notified via email. Spread is ${spreadDays} days.`);
+                console.log(`Pending reminder sent to ${staffName} (${staffEmail}).`);
             })
             .catch((error) => {
-                console.error("Overdue EmailJS dispatch failure:", error);
+                console.error("Pending reminder EmailJS dispatch failure:", error);
             });
     }
-
     function escapeInputText(rawString) {
         if (!rawString) return '';
         return rawString.replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match] || match));
@@ -927,12 +940,15 @@ updateClock();
 <div class="footer-ticker">
     <div class="ticker-content">
         &nbsp;&nbsp;Welcome to the Bookkeeping Workflow System. 
-        &nbsp;&nbsp;â€¢&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
-        &nbsp;&nbsp;â€¢&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
-        &nbsp;&nbsp;â€¢&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
+        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
+        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
+        &nbsp;&nbsp;&bull;&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
     </div>
 </div></body>
 </html>
+
+
+
 
 
 
