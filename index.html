@@ -1,0 +1,882 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOKKEEPING Workflow</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <style>
+        :root {
+            --ctc-green: #1d5217;
+            --ctc-green-hover: #1380e;
+            --dark-bar: #3d3d3d;
+            --light-beige: #e9e8e3;
+            --border-color: #bcbbba;
+            --text-dark: #111111;
+            
+            /* Theme Colors */
+            --table-header-bg: #f4f7f9;
+            --table-header-text: #0076a8;
+            --pagination-blue: #0084c2;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-beige);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+        }
+.top-right-logo {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 6px 16px;
+    border-radius: 4px;
+    display: flex;             /* Enables layout control */
+    flex-direction: row;       /* Aligns items horizontally */
+    align-items: center;       /* Centers items vertically */
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+        /* Top Brand Header Navbar */
+        .navbar {
+            background: #e2e1dc;
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 500;
+            color: #555555;
+            white-space: nowrap;
+        }
+        .logo-text strong {
+            color: var(--ctc-green);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .center-company-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #666666;
+            letter-spacing: 0.5px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 16px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .center-company-title .sub-corp {
+            font-size: 18px;
+            font-weight: 600;
+            color: #666666;
+            letter-spacing: 0.5px;
+        }
+
+        /* Top Right Logo Container */
+        .top-right-logo {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 6px 16px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .top-right-logo .ctc-txt {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ctc-green);
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+        .top-right-logo .sub-txt {
+            font-size: 5px;
+            text-transform: uppercase;
+            color: #777777;
+            letter-spacing: 0.5px;
+            margin-top: 1px;
+        }
+
+        /* Main Navigation Tab Ribbon */
+        .nav-ribbon {
+            background: var(--dark-bar);
+            display: flex;
+            padding: 0 24px;
+        }
+        .nav-tab {
+            color: #cdcdcd;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .nav-tab.active {
+            background: var(--ctc-green);
+            color: #ffffff;
+        }
+
+        /* View Workspace Container Layout */
+        .workspace-container {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Pagination Ribbon Utility Row */
+        .pagination-ribbon {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 4px;
+        }
+
+        .pagination-container {
+            display: flex;
+            border: 1px solid #d2d2d2;
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .page-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #555555;
+            background: #ffffff;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:not(:last-child) {
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .page-btn.active {
+            background: var(--pagination-blue);
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* Datagrid Table Properties */
+        .datagrid-overflow-container {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 70vh;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .datagrid-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .datagrid-table th {
+            background: var(--table-header-bg);
+            color: var(--table-header-text);
+            font-weight: 500;
+            padding: 12px 10px;
+            border-bottom: 2px solid #e2e7eb;
+            border-right: 1px solid #eaedf1;
+            vertical-align: middle;
+            user-select: none;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .th-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .th-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        /* Dual arrow sorting icon indicator */
+        .sort-trigger {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 9px;
+            line-height: 1;
+            margin-left: 4px;
+            vertical-align: middle;
+            color: #a0b2be;
+        }
+        
+        .th-label-row:hover {
+            color: var(--ctc-green-hover);
+        }
+
+        .header-filter-input {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #cccccc;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 11px;
+            font-weight: normal;
+            color: #333333;
+            background-color: #ffffff;
+        }
+
+        .header-filter-input:focus {
+            border-color: var(--pagination-blue);
+            outline: none;
+        }
+
+        .datagrid-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #eeeeee;
+            border-right: 1px solid #f4f4f4;
+            color: #333333;
+        }
+
+        /* Entry elements design adjustments */
+        .datagrid-table td input[type="text"],
+        .datagrid-table td input[type="date"],
+        .datagrid-table td select {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+            background: transparent;
+            padding: 4px;
+            font-size: 12px;
+            color: #333333;
+            border-radius: 3px;
+        }
+
+        .datagrid-table td input[type="text"]:focus,
+        .datagrid-table td input[type="date"]:focus,
+        .datagrid-table td select:focus {
+            border-color: var(--pagination-blue);
+            background: #ffffff;
+            outline: none;
+        }
+
+        .datagrid-table tbody tr {
+            background-color: #ffffff; 
+        }
+        
+        .datagrid-table tbody tr:hover {
+            background-color: #fff1ef;
+        }
+
+        .chk-col {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .select-status-inline {
+            width: 100%;
+            padding: 3px 6px;
+            border-radius: 3px;
+            border: 1px solid #cccccc;
+            font-size: 11px;
+            background: #ffffff;
+            color: #333;
+        }
+
+@keyframes priorityBlink {
+    0%   { background-color: #ffffff; }
+    50%  { background-color: #ffb3b3; }
+    100% { background-color: #ffffff; }
+}
+
+.priority-high {
+    animation: priorityBlink 1.2s infinite;
+}
+
+.priority-urgent {
+    animation: priorityBlink 0.5s infinite;
+}
+
+/* Add this to style section */
+.row-completed {
+    text-decoration: line-through;
+    color: #999999;
+    background-color: #f9f9f9;
+}
+
+/* Green styling for Signed or Completed rows */
+.row-signed-completed {
+    background-color: #e8f5e9 !important; /* Light green background */
+}
+
+.row-signed-completed input, 
+.row-signed-completed select {
+    background-color: #e8f5e9 !important; /* Match inputs to the row */
+    color: #1b5e20 !important;             /* Dark green text */
+    font-weight: 500;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="brand-header-left">
+        <div class="logo-text"><strong>BOOKKEEPING</strong> Workflow</div>
+        <div class="center-company-title">
+            Calgary Tax Consulting 
+            <span class="sub-corp">| Narinder Singh Professional Corporation | ACCPOL ACCOUNTING INC</span>
+        </div>
+    </div>
+    <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #800000; margin-right: 15px;"></div>
+
+    <div class="top-right-logo">
+
+        <div class="ctc-txt">CTC</div>
+        <div class="sub-txt">Calgary Tax Consulting</div>
+    </div>
+</div>
+
+
+<div class="workspace-container">
+    <div class="pagination-ribbon">
+        <div class="pagination-container">
+            
+        </div>
+    </div>
+
+    <div class="datagrid-overflow-container">
+        <table class="datagrid-table">
+            <thead>
+                <tr>
+                    <th style="width: 55px;">
+                        <div class="th-content">
+                            <div class="chk-col">
+                                <input type="checkbox" style="margin:0;">
+                                <span>#</span>
+                            </div>
+                            <div style="height: 19px;"></div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('client')">
+                                <span>Client Name</span>
+                                <span class="sort-trigger" id="sort-client">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('client', this.value)">
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('jobId')">
+                                <span>Job ID</span>
+                                <span class="sort-trigger" id="sort-jobId">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('jobId', this.value)">
+                        </div>
+                    </th>
+<th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('Year End')">
+                                <span>Year End</span>
+                                <span class="sort-trigger" id="sort-Year End">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('yearEnd', this.value)">
+                        </div>
+                    </th>
+
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('type')">
+                                <span>Type</span>
+                                <span class="sort-trigger" id="sort-type">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('type', this.value)">
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('allocDate')">
+                                <span>Allc. Date</span>
+                                <span class="sort-trigger" id="sort-allocDate">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('allocDate', this.value)">
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('expDate')">
+                                <span>Expt. Date</span>
+                                <span class="sort-trigger" id="sort-expDate">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('expDate', this.value)">
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('CRA Auth.')">
+                                <span>CRA Auth.</span>
+                                <span class="sort-trigger" id="sort-craAuth">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('craAuth', this.value)">
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('GST Status')">
+                                <span>GST Status</span>
+                                <span class="sort-trigger" id="sort-gstStatus">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('gstStatus', this.value)">
+                        </div>
+                    </th>
+
+                    <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('allocTo')">
+                                <span>Alloctd. To</span>
+                                <span class="sort-trigger" id="sort-allocTo">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('allocTo', this.value)">
+                        </div>
+                    </th>
+                    <th style="width: 150px;">
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('status')">
+                                <span>Change Status</span>
+                                <span class="sort-trigger" id="sort-status">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('status', this.value)">
+                        </div>
+                     <th>
+                        <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('Priority')">
+                                <span>Prioroty</span>
+                                <span class="sort-trigger" id="sort-priority">▲▼</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('priority', this.value)">
+                        </div>
+
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="trackingTableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const tableBodyElement = document.getElementById('trackingTableBody');
+    const TOTAL_LINES_LIMIT = 200;
+
+    const TEAM_EMAIL_DIRECTORY = {
+        "Mayank Bhatia": "mayank@calgarytaxconsulting.com",
+        "Sahil Thakur": "sahil@calgarytaxconsulting.com",
+        "Vashi Malik": "vashi@calgarytaxconsulting.com",
+        "Vishesh Walia": "vishesh@calgarytaxconsulting.com",
+        "Mukesh Dogra": "mukesh@calgarytaxconsulting.com",
+        
+    };
+
+    const EMAILJS_SERVICE_ID = "service_kfiehhp";
+    const EMAILJS_TEMPLATE_ID = "template_ywav7fj";
+    const EMAILJS_PUBLIC_KEY = "RzHAQ1CzyEimky9wP";
+
+    if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+
+    let storedData = {};
+    let activeFilters = { client: '', jobId: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '' };
+    let activeSort = { field: null, direction: 'asc' }; 
+
+    function drawTrackingInterface() {
+        let htmlBuffer = '';
+        let indexList = [];
+        for (let i = 0; i < TOTAL_LINES_LIMIT; i++) {
+            indexList.push(i);
+        }
+
+        indexList = indexList.filter(index => {
+            const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+            return Object.keys(activeFilters).every(field => {
+                const query = activeFilters[field].toLowerCase().trim();
+                if (!query) return true;
+                const value = (rowData[field] || '').toLowerCase();
+                return value.includes(query);
+            });
+        });
+
+        if (activeSort.field) {
+            indexList.sort((indexA, indexB) => {
+                const rowA = storedData[indexA] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+                const rowB = storedData[indexB] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+                
+                let valA = (rowA[activeSort.field] || '').toString().toLowerCase();
+                let valB = (rowB[activeSort.field] || '').toString().toLowerCase();
+
+                if (valA < valB) return activeSort.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return activeSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        if (indexList.length === 0) {
+            htmlBuffer = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: #777777;">No rows match active filters.</td></tr>`;
+        } else {
+            indexList.forEach(index => {
+                const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed';
+                htmlBuffer += `
+    <tr data-row-index="${index}" 
+        class="${isFinished ? 'row-signed-completed' : ''} ${
+            rowData.priority === 'Urgent' ? 'priority-urgent' : 
+            rowData.priority === 'High' ? 'priority-high' : ''
+        }">
+                        <td>
+                            <div class="chk-col">
+                                <input type="checkbox" style="margin:0;">
+                                <span style="color: #777777;">
+    ${rowData.priority === 'High' || rowData.priority === 'Urgent' ? '🚩 ' : ''}
+    ${index + 1}
+</span>
+                            </div>
+                        </td>
+                        <td><input type="text" class="data-input" data-field="client" value="${escapeInputText(rowData.client)}" placeholder="Client Name" style="font-weight: 500; color: #00567a;"></td>
+                        <td><input type="text" class="data-input" data-field="jobId" value="${escapeInputText(rowData.jobId)}" placeholder="Job ID"></td>
+ <td style="min-width:180px;">
+                            <div style="display:flex;gap:4px;">
+                            <select class="data-input" data-field="yearEnd" style="flex:1;">
+                                <option value="" ${rowData.yearEnd === '' ? 'selected' : ''}>Month...</option>
+                                <option value="January" ${rowData.yearEnd === 'January' ? 'selected' : ''}>January</option>
+                                <option value="February" ${rowData.yearEnd === 'February' ? 'selected' : ''}>February</option>
+                                <option value="March" ${rowData.yearEnd === 'March' ? 'selected' : ''}>March</option>
+                                <option value="April" ${rowData.yearEnd === 'April' ? 'selected' : ''}>April</option>
+                                <option value="May" ${rowData.yearEnd === 'May' ? 'selected' : ''}>May</option>
+                                <option value="June" ${rowData.yearEnd === 'June' ? 'selected' : ''}>June</option>
+                                <option value="July" ${rowData.yearEnd === 'July' ? 'selected' : ''}>July</option>
+                                <option value="August" ${rowData.yearEnd === 'August' ? 'selected' : ''}>August</option>
+                                <option value="September" ${rowData.yearEnd === 'September' ? 'selected' : ''}>September</option>
+                                <option value="October" ${rowData.yearEnd === 'October' ? 'selected' : ''}>October</option>
+                                <option value="November" ${rowData.yearEnd === 'November' ? 'selected' : ''}>November</option>
+                                <option value="December" ${rowData.yearEnd === 'December' ? 'selected' : ''}>December</option>
+                            </select>
+                            <select class="data-input" data-field="yearEndYear" style="flex:1;">
+                                <option value="" ${rowData.yearEndYear === '' ? 'selected' : ''}>Year...</option>
+                                <option value="2020" ${rowData.yearEndYear === '2020' ? 'selected' : ''}>2020</option>
+                                <option value="2021" ${rowData.yearEndYear === '2021' ? 'selected' : ''}>2021</option>
+                                <option value="2022" ${rowData.yearEndYear === '2022' ? 'selected' : ''}>2022</option>
+                                <option value="2023" ${rowData.yearEndYear === '2023' ? 'selected' : ''}>2023</option>
+                                <option value="2024" ${rowData.yearEndYear === '2024' ? 'selected' : ''}>2024</option>
+                                <option value="2025" ${rowData.yearEndYear === '2025' ? 'selected' : ''}>2025</option>
+                                <option value="2026" ${rowData.yearEndYear === '2026' ? 'selected' : ''}>2026</option>
+                            </select>
+                            </div>
+<td>
+                            <select class="data-input" data-field="type">
+                                <option value="" ${rowData.type === '' ? 'selected' : ''}>Select...</option>
+                                <option value="T2" ${rowData.type === 'T2' ? 'selected' : ''}>T2</option>
+                                <option value="NTR" ${rowData.type === 'NTR' ? 'selected' : ''}>NTR</option>
+                                <option value="GST" ${rowData.type === 'GST' ? 'selected' : ''}>GST</option>
+                                <option value="Funding Financials" ${rowData.type === 'Funding Financials' ? 'selected' : ''}>Funding Financials</option>
+                                <option value="T1" ${rowData.type === 'T1' ? 'selected' : ''}>T1</option>
+                                <option value="T4" ${rowData.type === 'T4' ? 'selected' : ''}>T4</option>
+                                <option value="T5" ${rowData.type === 'T5' ? 'selected' : ''}>T5</option>
+                                <option value="T4A" ${rowData.type === 'T4A' ? 'selected' : ''}>T4A</option>
+                                <option value="T5008" ${rowData.type === 'T5008' ? 'selected' : ''}>T5008</option>
+                            </select>
+                        </td>
+                        <td><input type="date" class="data-input" data-field="allocDate" value="${escapeInputText(rowData.allocDate)}"></td>
+                        <td><input type="date" class="data-input" data-field="expDate" value="${escapeInputText(rowData.expDate)}"></td>
+                        <td>
+                            <select class="data-input" data-field="craAuth">
+                                <option value="" ${rowData.craAuth === '' ? 'selected' : ''}>Select...</option>
+                                <option value="Yes" ${rowData.craAuth === 'Yes' ? 'selected' : ''}>Yes</option>
+                                <option value="No (Email Sent)" ${rowData.craAuth === 'No (Email Sent)' ? 'selected' : ''}>No (Email Sent)</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="data-input" data-field="gstStatus">
+                                <option value="" ${rowData.gstStatus === '' ? 'selected' : ''}>Select...</option>
+                                <option value="Filed" ${rowData.gstStatus === 'Filed' ? 'selected' : ''}>Filed</option>
+                                <option value="Pending" ${rowData.gstStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="No GST" ${rowData.gstStatus === 'No GST' ? 'selected' : ''}>No GST</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <select class="data-input" data-field="allocTo">
+                                <option value="" ${rowData.allocTo === '' ? 'selected' : ''}>Select...</option>
+                                <option value="Mayank Bhatia" ${rowData.allocTo === 'Mayank Bhatia' ? 'selected' : ''}>Mayank Bhatia</option>
+                                <option value="Sahil Thakur" ${rowData.allocTo === 'Sahil Thakur' ? 'selected' : ''}>Sahil Thakur</option>
+                                <option value="Vashi Malik" ${rowData.allocTo === 'Vashi Malik' ? 'selected' : ''}>Vashi Malik</option>
+                                <option value="Vishesh Walia" ${rowData.allocTo === 'Vishesh Walia' ? 'selected' : ''}>Vishesh Walia</option>
+                                <option value="Mukesh Dogra" ${rowData.allocTo === 'Mukesh Dogra' ? 'selected' : ''}>Mukesh Dogra</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-status-inline data-input" data-field="status">
+                                <option value="" ${rowData.status === '' ? 'selected' : ''}>Select...</option>
+                                <option value="Allocated" ${rowData.status === 'Allocated' ? 'selected' : ''}>Allocated</option>
+                                <option value="In Progress" ${rowData.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="On Hold" ${rowData.status === 'On Hold' ? 'selected' : ''}>On Hold</option>
+                                <option value="Missing" ${rowData.status === 'Missing' ? 'selected' : ''}>Missing</option>
+                                <option value="Sent for Review" ${rowData.status === 'Sent for Review' ? 'selected' : ''}>Sent for Review</option>
+                                <option value="Second Review" ${rowData.status === 'Second Review' ? 'selected' : ''}>Second Review</option>
+                                <option value="Draft Sent" ${rowData.status === 'Draft Sent' ? 'selected' : ''}>Draft Sent</option>
+                                <option value="Final Sent" ${rowData.status === 'Final Sent' ? 'selected' : ''}>Final Sent</option>
+                                <option value="Not Replying" ${rowData.status === 'Not Replying' ? 'selected' : ''}>Not Replying</option>
+                                <option value="SIGNED" ${rowData.status === 'SIGNED' ? 'selected' : ''}>SIGNED</option>
+                                <option value="Completed" ${rowData.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-status-inline data-input" data-field="priority">
+                                <option value="" ${rowData.priority === '' ? 'selected' : ''}>Select...</option>
+                                <option value="Normal" ${rowData.priority === 'Normal' ? 'selected' : ''}>Normal</option>
+                                <option value="High" ${rowData.priority === 'High' ? 'selected' : ''}>High</option>
+                                <option value="Urgent" ${rowData.priority === 'Urgent' ? 'selected' : ''}>Urgent</option>                           
+                            </select>
+                        </td>
+                    </tr>
+               `;
+            });
+        }
+        
+        tableBodyElement.innerHTML = htmlBuffer;
+    }
+
+    function handleFilterChange(field, value) {
+        activeFilters[field] = value;
+        drawTrackingInterface();
+    }
+
+    function sortByField(field) {
+        ['client','jobId','type','allocDate','expDate','allocTo','status'].forEach(f => {
+            const el = document.getElementById(`sort-${f}`);
+            if(el) el.textContent = '▲▼';
+        });
+
+        if (activeSort.field === field) {
+            activeSort.direction = activeSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            activeSort.field = field;
+            activeSort.direction = 'asc';
+        }
+
+        const indicator = document.getElementById(`sort-${field}`);
+        if(indicator) {
+            indicator.textContent = activeSort.direction === 'asc' ? '▲' : '▼';
+        }
+
+        drawTrackingInterface();
+    }
+
+    tableBodyElement.addEventListener('change', handleDataChange);
+
+    async function handleDataChange(event) {
+        const element = event.target;
+        if (!element.classList.contains('data-input')) return;
+
+        const row = element.closest('tr');
+        const rowIndex = row.getAttribute('data-row-index');
+        const fieldName = element.getAttribute('data-field');
+        const fieldValue = element.value;
+
+        const historicalStatus = storedData[rowIndex] ? storedData[rowIndex].status : '';
+        const historicalAllocTo = storedData[rowIndex] ? storedData[rowIndex].allocTo : '';
+
+        if (!storedData[rowIndex]) {
+            storedData[rowIndex] = {
+                client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false
+            };
+        }
+
+        storedData[rowIndex][fieldName] = fieldValue;
+        await saveRowToServer(rowIndex, storedData[rowIndex]);
+        drawTrackingInterface();
+
+        const currentStatus = storedData[rowIndex].status;
+        const currentAllocTo = storedData[rowIndex].allocTo;
+
+        const statusHasChanged = (fieldName === 'status' && historicalStatus !== fieldValue);
+        const userHasChanged = (fieldName === 'allocTo' && historicalAllocTo !== fieldValue);
+
+        const targetStatusActive = (currentStatus === 'Allocated' || currentStatus === 'In Progress' || currentStatus === 'Sent for Review');
+
+        const shouldTriggerEmail = (
+            (statusHasChanged && targetStatusActive) || 
+            (userHasChanged && fieldValue !== '' && targetStatusActive)
+        );
+
+        if (shouldTriggerEmail && currentAllocTo) {
+            triggerAllocationEmailAlert(storedData[rowIndex]);
+        }
+    }
+
+    function triggerAllocationEmailAlert(rowDetails) {
+        const staffName = rowDetails.allocTo;
+        const staffEmail = TEAM_EMAIL_DIRECTORY[staffName];
+
+        if (!staffName || !staffEmail) {
+            console.warn(`Email step aborted: Row state verified, but 'Alloctd. To' field is empty or unmapped.`);
+            return;
+        }
+
+        const messageVariables = {
+            employee_name: staffName,
+            employee_email: staffEmail,
+            client_name: rowDetails.client || 'Not Specified',
+            job_id: rowDetails.jobId || 'N/A',
+            alloc_date: rowDetails.allocDate || 'Not Configured',
+            exp_date: rowDetails.expDate || 'Not Configured',
+            job_status: rowDetails.status || 'Allocated'
+        };
+
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, messageVariables)
+            .then(() => {
+                console.log(`Success: Notification email (${rowDetails.status}) successfully relayed to ${staffName} (${staffEmail}).`);
+            })
+            .catch((error) => {
+                console.error("EmailJS Error Breakdown:", error);
+            });
+    }
+
+    function auditOverdueMilestones() {
+        const todayString = new Date().toISOString().split('T')[0];
+
+        Object.keys(storedData).forEach(index => {
+            const rowData = storedData[index];
+            if (!rowData || !rowData.allocDate || !rowData.expDate || !rowData.allocTo) return;
+            if (rowData.status === 'Completed' || rowData.status === 'SIGNED') return;
+
+            const allocDateObj = new Date(rowData.allocDate);
+            const expDateObj = new Date(rowData.expDate);
+
+            const timeDifference = expDateObj.getTime() - allocDateObj.getTime();
+            const dayDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+
+            if (dayDifference > 15) {
+                if (rowData.lastOverdueNotificationDate !== todayString) {
+                    dispatchOverdueEmailNotice(rowData, dayDifference);
+                    rowData.lastOverdueNotificationDate = todayString;
+                    saveRowToServer(index, rowData);
+                }
+            }
+        });
+    }
+
+    function dispatchOverdueEmailNotice(rowDetails, spreadDays) {
+        const staffName = rowDetails.allocTo;
+        const staffEmail = TEAM_EMAIL_DIRECTORY[staffName];
+
+        if (!staffName || !staffEmail) return;
+
+        const messageVariables = {
+            employee_name: staffName,
+            employee_email: staffEmail,
+            client_name: rowDetails.client || 'Not Specified',
+            job_id: rowDetails.jobId || 'N/A',
+            alloc_date: rowDetails.allocDate || 'Not Configured',
+            exp_date: rowDetails.expDate || 'Not Configured',
+            job_status: `OVERDUE NOTICE (${spreadDays} Days Spread)`
+        };
+
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, messageVariables)
+            .then(() => {
+                console.log(`Overdue Alert Sent: ${staffName} notified via email. Spread is ${spreadDays} days.`);
+            })
+            .catch((error) => {
+                console.error("Overdue EmailJS dispatch failure:", error);
+            });
+    }
+
+    function escapeInputText(rawString) {
+        if (!rawString) return '';
+        return rawString.replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match] || match));
+    }
+
+    async function saveRowToServer(rowIndex, rowData) {
+        try {
+            await fetch(`/api/rows/${rowIndex}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(rowData)
+            });
+        } catch (e) {
+            console.error('Failed to save row:', e);
+        }
+    }
+
+    async function loadDataFromServer() {
+        try {
+            const response = await fetch('/api/rows');
+            if (response.ok) {
+                storedData = await response.json();
+            }
+        } catch (e) {
+            console.error('Failed to load data:', e);
+        }
+        drawTrackingInterface();
+        auditOverdueMilestones();
+    }
+
+    loadDataFromServer();
+    // Refresh shared data every 30 seconds so all users see each other's changes
+    setInterval(loadDataFromServer, 30000);
+function updateClock() {
+    const now = new Date();
+    // Formats time as HH:MM:SS
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('live-clock').textContent = timeString;
+}
+
+// Update the clock every 1000ms (1 second)
+setInterval(updateClock, 1000);
+
+// Initialize clock immediately so it doesn't wait 1 second to appear
+updateClock();
+</script>
+<div class="footer-ticker">
+    <marquee scrollamount="6">
+        &nbsp;&nbsp;Welcome to the Bookkeeping Workflow System. 
+        &nbsp;&nbsp;•&nbsp;&nbsp;Please ensure all data fields are entered accurately. 
+&nbsp;&nbsp;•&nbsp;&nbsp;Every file should be completed within 3 months after the Year Ended.
+&nbsp;&nbsp;•&nbsp;&nbsp;Every deadline should be kept in mind, for Qtrly & Monthly GST (1 Month) & for Yearly GST & T2 (3 Months).
+               </marquee>
+
+</div>
+</body>
+</html>
