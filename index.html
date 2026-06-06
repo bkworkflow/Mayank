@@ -387,6 +387,106 @@
             text-overflow: ellipsis;
         }
 
+        body.auth-locked .navbar,
+        body.auth-locked .workspace-container,
+        body.auth-locked .footer-ticker {
+            display: none;
+        }
+
+        .login-screen {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        body.auth-locked .login-screen {
+            display: flex;
+        }
+
+        .login-panel {
+            width: min(420px, 100%);
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 26px;
+        }
+
+        .login-panel h1 {
+            margin: 0 0 6px;
+            color: var(--firm-green-dark);
+            font-size: 24px;
+        }
+
+        .login-panel p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .login-panel label {
+            display: block;
+            margin-top: 12px;
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 750;
+            text-transform: uppercase;
+        }
+
+        .login-panel input {
+            width: 100%;
+            margin-top: 6px;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .login-panel button,
+        .account-panel button {
+            border: 0;
+            border-radius: 6px;
+            background: var(--firm-green);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 750;
+        }
+
+        .login-panel button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 11px 14px;
+            font-size: 14px;
+        }
+
+        .login-panel button:disabled {
+            cursor: wait;
+            opacity: 0.75;
+        }
+
+        .login-error {
+            min-height: 18px;
+            margin-top: 12px;
+            color: var(--firm-red);
+            font-weight: 650;
+        }
+
+        .account-panel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .account-panel button {
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+
         @media (max-width: 900px) {
             .navbar {
                 align-items: flex-start;
@@ -408,9 +508,22 @@
                 grid-template-columns: repeat(2, minmax(140px, 1fr));
             }
         }
-    </style>
+</style>
 </head>
-<body>
+<body class="auth-locked">
+
+<div class="login-screen">
+    <form class="login-panel" id="login-form">
+        <h1>CTC Workflow Login</h1>
+        <p>Use your assigned Supabase email and password to view allocated files.</p>
+        <label for="login-email">Login ID</label>
+        <input id="login-email" type="email" autocomplete="username" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" autocomplete="current-password" required>
+        <button id="login-submit" type="submit">Log in</button>
+        <div class="login-error" id="login-error"></div>
+    </form>
+</div>
 
 <div class="navbar">
     <div class="brand-header-left">
@@ -421,6 +534,10 @@
         </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px; margin-right:15px;">
+        <div class="account-panel">
+            <span id="current-user-label"></span>
+            <button type="button" onclick="handleLogout()">Logout</button>
+        </div>
         <div id="save-status" style="font-size: 12px; font-weight: 600; color: #555555; min-width: 120px; text-align: right;">Ready</div>
         <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #800000;"></div>
     </div>
@@ -584,6 +701,7 @@
 
     const tableBodyElement = document.getElementById('trackingTableBody');
     const TOTAL_LINES_LIMIT = 200;
+    const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
 
     const TEAM_EMAIL_DIRECTORY = {
         "Mayank Bhatia": "mayank@calgarytaxconsulting.com",
@@ -592,6 +710,14 @@
         "Vishesh Walia": "vishesh@calgarytaxconsulting.com",
         "Mukesh Dogra": "mukesh@calgarytaxconsulting.com",
         
+    };
+
+    const TEAM_LOGIN_DIRECTORY = {
+        "mayank@calgarytaxconsulting.com": { staffName: "Mayank Bhatia", role: "master" },
+        "sahil@calgarytaxconsulting.com": { staffName: "Sahil Thakur", role: "staff" },
+        "vashi@calgarytaxconsulting.com": { staffName: "Vashi Malik", role: "staff" },
+        "vishesh@calgarytaxconsulting.com": { staffName: "Vishesh Walia", role: "staff" },
+        "mukesh@calgarytaxconsulting.com": { staffName: "Mukesh Dogra", role: "staff" }
     };
 
     const EMAILJS_SERVICE_ID = "service_kfiehhp";
@@ -606,6 +732,106 @@
     let storedData = {};
     let activeFilters = { client: '', jobId: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '' };
     let activeSort = { field: null, direction: 'asc' };
+    let currentUserProfile = null;
+    const allocationEmailLocks = new Set();
+
+    function normalizeEmail(email) {
+        return (email || '').toString().trim().toLowerCase();
+    }
+
+    function getLoginProfile(user) {
+        const email = normalizeEmail(user && user.email);
+        const profile = TEAM_LOGIN_DIRECTORY[email];
+        if (!profile) return null;
+        return { ...profile, email };
+    }
+
+    function isMasterUser() {
+        return currentUserProfile && (currentUserProfile.role === 'master' || currentUserProfile.email === MASTER_LOGIN_EMAIL);
+    }
+
+    function canViewRow(rowData) {
+        if (isMasterUser()) return true;
+        if (!currentUserProfile || !rowData) return false;
+        return (rowData.allocTo || '') === currentUserProfile.staffName;
+    }
+
+    async function applyLoggedInUser(user) {
+        const profile = getLoginProfile(user);
+        if (!profile) {
+            await supabaseClient.auth.signOut();
+            showLoggedOutState('This login is not listed in the team directory.');
+            return;
+        }
+
+        currentUserProfile = profile;
+        const userLabel = document.getElementById('current-user-label');
+        if (userLabel) {
+            userLabel.textContent = `${profile.staffName}${isMasterUser() ? ' (Master)' : ''}`;
+        }
+        document.body.classList.remove('auth-locked');
+        await loadDataFromServer();
+    }
+
+    function showLoggedOutState(message = '') {
+        currentUserProfile = null;
+        storedData = {};
+        document.body.classList.add('auth-locked');
+        const loginError = document.getElementById('login-error');
+        if (loginError) loginError.textContent = message;
+        const loginButton = document.getElementById('login-submit');
+        if (loginButton) {
+            loginButton.disabled = false;
+            loginButton.textContent = 'Log in';
+        }
+        setSyncStatus('Ready');
+    }
+
+    async function handleLoginSubmit(event) {
+        event.preventDefault();
+        const loginButton = document.getElementById('login-submit');
+        const loginError = document.getElementById('login-error');
+        const email = normalizeEmail(document.getElementById('login-email').value);
+        const password = document.getElementById('login-password').value;
+
+        if (loginButton) {
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+        }
+        if (loginError) loginError.textContent = '';
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            showLoggedOutState(error.message);
+            return;
+        }
+        await applyLoggedInUser(data.user);
+    }
+
+    async function handleLogout() {
+        await supabaseClient.auth.signOut();
+        showLoggedOutState('');
+    }
+
+    async function initializeAuth() {
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) loginForm.addEventListener('submit', handleLoginSubmit);
+
+        const { data } = await supabaseClient.auth.getSession();
+        if (data && data.session && data.session.user) {
+            await applyLoggedInUser(data.session.user);
+        } else {
+            showLoggedOutState('');
+        }
+
+        supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+            if (session && session.user) {
+                await applyLoggedInUser(session.user);
+            } else {
+                showLoggedOutState('');
+            }
+        });
+    }
 
     function setSyncStatus(message, color = '#555555') {
         const statusElement = document.getElementById('save-status');
@@ -621,7 +847,7 @@
     }
 
     function updateWorkflowSummary() {
-        const rows = Object.values(storedData).filter(row => row && (row.client || row.jobId || row.allocTo || row.status));
+        const rows = Object.values(storedData).filter(row => row && canViewRow(row) && (row.client || row.jobId || row.allocTo || row.status));
         const completed = rows.filter(row => isCompletedStatus(row.status)).length;
         const priority = rows.filter(row => row.priority === 'High' || row.priority === 'Urgent').length;
         const assigned = rows.filter(row => row.allocTo && !isCompletedStatus(row.status)).length;
@@ -644,7 +870,8 @@
         let htmlBuffer = '';
         let indexList = [];
         for (let i = 0; i < TOTAL_LINES_LIMIT; i++) {
-            indexList.push(i);
+            const rowData = storedData[i] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+            if (canViewRow(rowData)) indexList.push(i);
         }
 
         indexList = indexList.filter(index => {
@@ -672,7 +899,7 @@
         }
 
         if (indexList.length === 0) {
-            htmlBuffer = `<tr><td colspan="8" style="text-align: center; padding: 20px; color: #777777;">No rows match active filters.</td></tr>`;
+            htmlBuffer = `<tr><td colspan="12" style="text-align: center; padding: 20px; color: #777777;">No rows match your login or active filters.</td></tr>`;
         } else {
             indexList.forEach(index => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
@@ -833,6 +1060,13 @@ const isFinished = isCompletedStatus(rowData.status);
         const rowIndex = row.getAttribute('data-row-index');
         const fieldName = element.getAttribute('data-field');
         const fieldValue = element.value;
+        const visibleRow = storedData[rowIndex] || {};
+
+        if (!isMasterUser() && !canViewRow(visibleRow)) {
+            alert('You can only edit files allocated to your login.');
+            drawTrackingInterface();
+            return;
+        }
 
         const historicalStatus = storedData[rowIndex] ? storedData[rowIndex].status : '';
         const historicalAllocTo = storedData[rowIndex] ? storedData[rowIndex].allocTo : '';
@@ -861,11 +1095,21 @@ const isFinished = isCompletedStatus(rowData.status);
         );
 
         if (shouldTriggerEmail && currentAllocTo) {
-            triggerAllocationEmailAlert(storedData[rowIndex]);
+            triggerAllocationEmailAlert(rowIndex, storedData[rowIndex]);
         }
     }
 
-    function triggerAllocationEmailAlert(rowDetails) {
+    function buildAllocationEmailKey(rowIndex, rowDetails) {
+        return [
+            rowIndex,
+            rowDetails.allocTo || '',
+            rowDetails.status || '',
+            rowDetails.client || '',
+            rowDetails.jobId || ''
+        ].join('|');
+    }
+
+    function triggerAllocationEmailAlert(rowIndex, rowDetails) {
         const staffName = rowDetails.allocTo;
         const staffEmail = TEAM_EMAIL_DIRECTORY[staffName];
 
@@ -873,6 +1117,13 @@ const isFinished = isCompletedStatus(rowData.status);
             console.warn(`Email step aborted: Row state verified, but 'Alloctd. To' field is empty or unmapped.`);
             return;
         }
+
+        const allocationEmailKey = buildAllocationEmailKey(rowIndex, rowDetails);
+        if (allocationEmailLocks.has(allocationEmailKey)) {
+            console.log(`Skipped duplicate allocation notification for ${staffName}.`);
+            return;
+        }
+        allocationEmailLocks.add(allocationEmailKey);
 
         const messageVariables = {
             employee_name: staffName,
@@ -895,12 +1146,18 @@ const isFinished = isCompletedStatus(rowData.status);
 
     function auditOverdueMilestones() {
         const todayString = new Date().toISOString().split('T')[0];
+        const todayDate = new Date(`${todayString}T00:00:00`);
 
         Object.keys(storedData).forEach(index => {
             const rowData = storedData[index];
             if (!rowData || !rowData.allocTo) return;
+            if (!canViewRow(rowData)) return;
             if (isCompletedStatus(rowData.status)) return;
             if (!rowData.client && !rowData.jobId) return;
+            if (!rowData.expDate) return;
+
+            const expectedDate = new Date(`${rowData.expDate}T00:00:00`);
+            if (Number.isNaN(expectedDate.getTime()) || expectedDate >= todayDate) return;
 
             if (rowData.lastOverdueNotificationDate !== todayString) {
                 dispatchPendingReminderEmail(rowData);
@@ -940,6 +1197,7 @@ const isFinished = isCompletedStatus(rowData.status);
     }
 
     async function saveRowToServer(rowIndex, rowData) {
+        if (!currentUserProfile) return false;
         const numericRowId = Number(rowIndex);
         const allowedFields = [
             'client', 'jobId', 'yearEnd', 'yearEndYear', 'type', 'allocDate', 'expDate',
@@ -978,6 +1236,7 @@ const isFinished = isCompletedStatus(rowData.status);
         return true;
     }
     async function loadDataFromServer() {
+        if (!currentUserProfile) return;
         setSyncStatus('Loading...', '#0076a8');
         const { data, error } = await supabaseClient
             .from('workflow')
@@ -1001,9 +1260,11 @@ const isFinished = isCompletedStatus(rowData.status);
         auditOverdueMilestones();
         setSyncStatus('Loaded', '#1d5217');
     }
-    loadDataFromServer();
+    initializeAuth();
     // Refresh shared data every 30 seconds so all users see each other's changes
-    setInterval(loadDataFromServer, 30000);
+    setInterval(() => {
+        if (currentUserProfile) loadDataFromServer();
+    }, 30000);
 function updateClock() {
     const now = new Date();
     // Formats time as HH:MM:SS
