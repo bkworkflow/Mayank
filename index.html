@@ -185,8 +185,7 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .pagination-ribbon,
-        .monitoring-panel {
+        .pagination-ribbon {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -206,8 +205,7 @@
             width: 100%;
         }
 
-        .pagination-container button,
-        .monitoring-panel button {
+        .pagination-container button {
             border: 0;
             border-radius: 6px;
             background: var(--firm-green);
@@ -227,84 +225,6 @@
             color: var(--muted);
             font-weight: 700;
             margin-left: auto;
-        }
-
-        .monitoring-panel {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-        .monitoring-notice {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.45;
-        }
-
-        .activity-dashboard {
-            display: none;
-            width: 100%;
-            border-top: 1px solid var(--line);
-            padding-top: 10px;
-        }
-
-        .activity-dashboard.visible {
-            display: block;
-        }
-
-        .activity-dashboard h2 {
-            margin: 0 0 8px;
-            color: var(--firm-green-dark);
-            font-size: 15px;
-        }
-
-        .activity-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(160px, 1fr));
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .activity-stat {
-            border: 1px solid var(--line);
-            border-radius: 7px;
-            padding: 9px 10px;
-            background: var(--panel-soft);
-        }
-
-        .activity-stat span {
-            display: block;
-            color: var(--muted);
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .activity-stat strong {
-            display: block;
-            margin-top: 3px;
-            color: var(--ink);
-            font-size: 17px;
-        }
-
-        .activity-list {
-            display: grid;
-            gap: 6px;
-            max-height: 170px;
-            overflow: auto;
-        }
-
-        .activity-item {
-            display: grid;
-            grid-template-columns: 140px 150px 1fr;
-            gap: 8px;
-            border-bottom: 1px solid #e5f2f8;
-            padding: 6px 0;
-            color: var(--ink);
-            font-size: 12px;
-        }
-
-        .activity-item span {
-            color: var(--muted);
         }
 
         .datagrid-overflow-container {
@@ -517,6 +437,14 @@
             align-items: center;
             justify-content: center;
             padding: 24px;
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(90deg, rgba(237, 248, 253, 0.94), rgba(237, 248, 253, 0.72)),
+                url("data:image/svg+xml,%3Csvg width='360' height='300' viewBox='0 0 360 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%230369a1' stroke-opacity='0.18' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='52' y='38' width='108' height='154' rx='16' fill='%23ffffff' fill-opacity='0.45'/%3E%3Crect x='75' y='63' width='62' height='28' rx='5'/%3E%3Cpath d='M78 117h4M105 117h4M132 117h4M78 143h4M105 143h4M132 143h4M78 169h4M105 169h4M132 169h4'/%3E%3Cpath d='M214 70h74l28 28v112H214z' fill='%23ffffff' fill-opacity='0.35'/%3E%3Cpath d='M288 70v28h28M234 121h58M234 148h58M234 175h38'/%3E%3Cpath d='M78 236h204M108 216l22 20 46-55M232 220c0-19 14-32 34-32 10 0 20 3 28 10M260 164v72'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: cover, min(760px, 78vw);
+            background-position: center, center;
+            background-repeat: no-repeat;
         }
 
         body.auth-locked .login-screen {
@@ -693,32 +621,6 @@
         </div>
     </div>
 
-    <div class="monitoring-panel">
-        <div class="monitoring-notice">
-            Activity monitoring is enabled for this workflow. The system records login presence and file changes so the master login can review live productivity and accountability.
-        </div>
-        <div class="activity-dashboard" id="activity-dashboard">
-            <h2>Live Productivity Monitor</h2>
-            <div class="activity-grid">
-                <div class="activity-stat">
-                    <span>Online Now</span>
-                    <strong id="activity-online-count">0</strong>
-                </div>
-                <div class="activity-stat">
-                    <span>Changes Today</span>
-                    <strong id="activity-change-count">0</strong>
-                </div>
-                <div class="activity-stat">
-                    <span>Recent Updates</span>
-                    <strong id="activity-recent-count">0</strong>
-                </div>
-            </div>
-            <div class="activity-list" id="activity-list">
-                <div class="activity-item"><span>Waiting</span><span>Activity</span><strong>No activity loaded yet.</strong></div>
-            </div>
-        </div>
-    </div>
-
     <div class="datagrid-overflow-container">
         <table class="datagrid-table">
             <thead>
@@ -881,7 +783,6 @@
     let activeSort = { field: null, direction: 'asc' };
     let currentUserProfile = null;
     let currentPage = 1;
-    let latestActivityRows = [];
     const allocationEmailLocks = new Set();
     const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
 
@@ -917,7 +818,6 @@
 
         if (indiaTime.weekday === 'Saturday' && indiaHour >= 7 && alreadyLoggedOutDate !== indiaDateKey) {
             localStorage.setItem(SATURDAY_LOGOUT_STORAGE_KEY, indiaDateKey);
-            await recordActivity('logout');
             await supabaseClient.auth.signOut();
             showLoggedOutState('Weekly logout completed. Please log in again.');
         }
@@ -963,125 +863,6 @@
         drawTrackingInterface();
     }
 
-    function formatActivityTime(isoValue) {
-        if (!isoValue) return '';
-        return new Date(isoValue).toLocaleString([], {
-            month: 'short',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-
-    function describeActivity(row) {
-        if (row.action_type === 'login') return 'Logged in';
-        if (row.action_type === 'logout') return 'Logged out';
-        if (row.action_type === 'heartbeat') return 'Active in workflow';
-        if (row.action_type === 'edit') {
-            const fileLabel = [row.client_name, row.job_id].filter(Boolean).join(' / ') || `Row ${Number(row.row_id) + 1}`;
-            return `${row.field_name || 'Field'} changed on ${fileLabel}: "${row.old_value || ''}" to "${row.new_value || ''}"`;
-        }
-        return row.action_type || 'Activity';
-    }
-
-    function renderActivityDashboard() {
-        const dashboard = document.getElementById('activity-dashboard');
-        if (!dashboard) return;
-
-        if (!isMasterUser()) {
-            dashboard.classList.remove('visible');
-            return;
-        }
-
-        dashboard.classList.add('visible');
-        const now = Date.now();
-        const todayKey = new Date().toISOString().split('T')[0];
-        const onlineEmails = new Set(
-            latestActivityRows
-                .filter(row => row.action_type === 'heartbeat' && row.created_at && now - new Date(row.created_at).getTime() <= 125000)
-                .map(row => row.user_email)
-                .filter(Boolean)
-        );
-        const todayChanges = latestActivityRows.filter(row => row.action_type === 'edit' && (row.created_at || '').startsWith(todayKey)).length;
-        const recentUpdates = latestActivityRows.filter(row => row.action_type === 'edit').length;
-
-        const onlineElement = document.getElementById('activity-online-count');
-        const changesElement = document.getElementById('activity-change-count');
-        const recentElement = document.getElementById('activity-recent-count');
-        const listElement = document.getElementById('activity-list');
-
-        if (onlineElement) onlineElement.textContent = onlineEmails.size;
-        if (changesElement) changesElement.textContent = todayChanges;
-        if (recentElement) recentElement.textContent = recentUpdates;
-
-        if (listElement) {
-            const rowsToShow = latestActivityRows.filter(row => row.action_type !== 'heartbeat').slice(0, 25);
-            if (rowsToShow.length === 0) {
-                listElement.innerHTML = '<div class="activity-item"><span>Waiting</span><span>Activity</span><strong>No activity yet.</strong></div>';
-            } else {
-                listElement.innerHTML = rowsToShow.map(row => `
-                    <div class="activity-item">
-                        <span>${escapeInputText(formatActivityTime(row.created_at))}</span>
-                        <span>${escapeInputText(row.staff_name || row.user_email || '')}</span>
-                        <strong>${escapeInputText(describeActivity(row))}</strong>
-                    </div>
-                `).join('');
-            }
-        }
-    }
-
-    async function recordActivity(actionType, details = {}) {
-        if (!currentUserProfile) return;
-
-        const activityPayload = {
-            action_type: actionType,
-            user_email: currentUserProfile.email,
-            staff_name: currentUserProfile.staffName,
-            row_id: details.rowId ?? null,
-            field_name: details.fieldName || null,
-            old_value: details.oldValue === undefined || details.oldValue === null ? null : String(details.oldValue),
-            new_value: details.newValue === undefined || details.newValue === null ? null : String(details.newValue),
-            client_name: details.clientName || null,
-            job_id: details.jobId || null
-        };
-
-        const { error } = await supabaseClient
-            .from('activity_log')
-            .insert(activityPayload);
-
-        if (error) {
-            console.warn('Activity monitoring could not save. Create the activity_log table in Supabase.', error.message);
-        }
-    }
-
-    async function sendActivityHeartbeat() {
-        await recordActivity('heartbeat');
-        if (isMasterUser()) await loadActivityLog();
-    }
-
-    async function loadActivityLog() {
-        if (!isMasterUser()) {
-            latestActivityRows = [];
-            renderActivityDashboard();
-            return;
-        }
-
-        const { data, error } = await supabaseClient
-            .from('activity_log')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(200);
-
-        if (error) {
-            console.warn('Activity monitor load failed. Create the activity_log table in Supabase.', error.message);
-            latestActivityRows = [];
-        } else {
-            latestActivityRows = data || [];
-        }
-
-        renderActivityDashboard();
-    }
-
     async function applyLoggedInUser(user) {
         const profile = getLoginProfile(user);
         if (!profile) {
@@ -1098,8 +879,6 @@
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
         await enforceSaturdayLogout();
-        await recordActivity('login');
-        await sendActivityHeartbeat();
     }
 
     function showLoggedOutState(message = '') {
@@ -1113,8 +892,6 @@
             loginButton.disabled = false;
             loginButton.textContent = 'Log in';
         }
-        latestActivityRows = [];
-        renderActivityDashboard();
         setSyncStatus('Ready');
     }
 
@@ -1140,7 +917,6 @@
     }
 
     async function handleLogout() {
-        await recordActivity('logout');
         await supabaseClient.auth.signOut();
         showLoggedOutState('');
     }
@@ -1165,7 +941,6 @@
         });
 
         setInterval(enforceSaturdayLogout, 60000);
-        setInterval(sendActivityHeartbeat, 60000);
     }
 
     function setSyncStatus(message, color = '#555555') {
@@ -1419,8 +1194,6 @@ const isFinished = isCompletedStatus(rowData.status);
 
         const historicalStatus = storedData[rowIndex] ? storedData[rowIndex].status : '';
         const historicalAllocTo = storedData[rowIndex] ? storedData[rowIndex].allocTo : '';
-        const historicalValue = storedData[rowIndex] ? storedData[rowIndex][fieldName] : '';
-
         if (!storedData[rowIndex]) {
             storedData[rowIndex] = {
                 client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false
@@ -1428,18 +1201,7 @@ const isFinished = isCompletedStatus(rowData.status);
         }
 
         storedData[rowIndex][fieldName] = fieldValue;
-        const saveSucceeded = await saveRowToServer(rowIndex, storedData[rowIndex]);
-        if (saveSucceeded && historicalValue !== fieldValue) {
-            await recordActivity('edit', {
-                rowId: Number(rowIndex),
-                fieldName,
-                oldValue: historicalValue || '',
-                newValue: fieldValue || '',
-                clientName: storedData[rowIndex].client || '',
-                jobId: storedData[rowIndex].jobId || ''
-            });
-            if (isMasterUser()) await loadActivityLog();
-        }
+        await saveRowToServer(rowIndex, storedData[rowIndex]);
         drawTrackingInterface();
 
         const currentStatus = storedData[rowIndex].status;
@@ -1619,14 +1381,9 @@ const isFinished = isCompletedStatus(rowData.status);
         }
         drawTrackingInterface();
         auditOverdueMilestones();
-        await loadActivityLog();
         setSyncStatus('Loaded', '#0369a1');
     }
     initializeAuth();
-    // Refresh shared data every 30 seconds so all users see each other's changes
-    setInterval(() => {
-        if (currentUserProfile) loadDataFromServer();
-    }, 30000);
 function updateClock() {
     const now = new Date();
     // Formats time as HH:MM:SS
