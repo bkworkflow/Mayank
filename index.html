@@ -1,12 +1,16 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOOKKEEPING Workflow</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -481,7 +485,7 @@
                      <th>
                         <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('Priority')">
-                                <span>Prioroty</span>
+                                <span>Priority</span>
                                 <span class="sort-trigger" id="sort-priority">▲▼</span>
                             </div>
                             <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('priority', this.value)">
@@ -513,6 +517,7 @@
     const EMAILJS_SERVICE_ID = "service_kfiehhp";
     const EMAILJS_TEMPLATE_ID = "template_ywav7fj";
     const EMAILJS_PUBLIC_KEY = "RzHAQ1CzyEimky9wP";
+    const supabase = supabase.createClient('https://grwgobmzgxunoekphkcz.supabase.co', 'sb_publishable_3BIYKo0MzVzGfAFNLxwsBw_wb7ZtvJG');
 
     if(EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
         emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -829,25 +834,22 @@ const isFinished = rowData.status === 'SIGNED' || rowData.status === 'Completed'
     }
 
     async function saveRowToServer(rowIndex, rowData) {
-        try {
-            await fetch(`/api/rows/${rowIndex}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(rowData)
-            });
-        } catch (e) {
-            console.error('Failed to save row:', e);
-        }
+        const { error } = await supabase
+            .from('workflow')
+            .upsert({ id: rowIndex, ...rowData });
+        if (error) console.error('Error saving to Supabase:', error);
     }
 
     async function loadDataFromServer() {
-        try {
-            const response = await fetch('/api/rows');
-            if (response.ok) {
-                storedData = await response.json();
-            }
-        } catch (e) {
-            console.error('Failed to load data:', e);
+        const { data, error } = await supabase
+            .from('workflow')
+            .select('*');
+        if (error) {
+            console.error('Error loading data:', error);
+            return;
+        }
+        if (data) {
+            data.forEach(row => { storedData[row.id] = row; });
         }
         drawTrackingInterface();
         auditOverdueMilestones();
