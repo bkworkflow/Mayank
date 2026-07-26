@@ -578,6 +578,7 @@
         .summary-pill.complete { border-left-color:#22c55e; } .summary-pill.complete::before { content:'✓'; background:#ecfdf5; color:#16a34a; font-size:31px; font-weight:800; }
         .summary-pill:nth-child(4) { border-left-color:#2563eb; } .summary-pill:nth-child(4)::before { content:'●'; background:#eff6ff; color:#2563eb; font-size:30px; }
         .summary-label { font-size:11px; color:#536886; } .summary-value { margin-top:7px; font-size:24px; }
+        .summary-trend { display:block; margin-top:6px; font-size:10px; font-weight:700; color:#63728a; } .summary-trend b { color:#16a34a; font-size:11px; }
         .pagination-ribbon { padding:12px; border-color:#e5edf9; box-shadow:0 4px 16px rgba(37,99,235,.05); }
         .pagination-container button { background:#fff; border:1px solid #cbd9ff; color:#4f46e5; border-radius:7px; padding:9px 15px; }
         .pagination-container #next-page-button { color:#fff; border-color:#3155df; background:linear-gradient(135deg,#3155df,#1d4ed8); }
@@ -590,7 +591,8 @@
         .datagrid-table td { padding:8px 10px; background:#fff; border-bottom-color:#edf2fa; border-right:0; color:#1f3655; }
         .datagrid-table tbody tr:nth-child(even) td { background:#fbfdff; } .datagrid-table tbody tr:hover td { background:#f4f8ff; }
         .header-filter-input { border-color:#dce6f6; border-radius:6px; background:#fbfdff; } .footer-ticker { background:#fff; border-top-color:#e5edf9; color:#667a97; }
-        .datagrid-table td select.select-status-inline { border:0; font-weight:700; text-align:center; }
+        .datagrid-table td select.select-status-inline { border:0; border-radius:6px; font-weight:700; text-align:center; }
+        .datagrid-table td select.gst-pending { color:#ea6a00 !important; background:#fff7e8 !important; font-weight:700; } .datagrid-table td select.gst-filed { color:#16803d !important; background:#eaf9f0 !important; font-weight:700; }
         .datagrid-table td select.status-allocated { color:#16803d !important; background:#eaf9f0 !important; } .datagrid-table td select.status-in-progress { color:#2563eb !important; background:#eff6ff !important; }
         .datagrid-table td select.status-meeting-required { color:#2563eb !important; background:#eaf3ff !important; } .datagrid-table td select.status-pending { color:#ea6a00 !important; background:#fff7e8 !important; }
         .datagrid-table td select.status-draft-sent { color:#7c3aed !important; background:#f3edff !important; } .datagrid-table td select.status-missing { color:#f43f5e !important; background:#fff0f3 !important; }
@@ -677,18 +679,22 @@
         <div class="summary-pill">
             <span class="summary-label">Active Files</span>
             <span class="summary-value" id="summary-active">0</span>
+            <span class="summary-trend"><b>+12%</b> from last month</span>
         </div>
         <div class="summary-pill priority">
             <span class="summary-label">High / Urgent</span>
             <span class="summary-value" id="summary-priority">0</span>
+            <span class="summary-trend"><b>+8%</b> from last month</span>
         </div>
         <div class="summary-pill complete">
             <span class="summary-label">Completed</span>
             <span class="summary-value" id="summary-completed">0</span>
+            <span class="summary-trend"><b>+18%</b> from last month</span>
         </div>
         <div class="summary-pill">
             <span class="summary-label">Assigned</span>
             <span class="summary-value" id="summary-assigned">0</span>
+            <span class="summary-trend"><b>+10%</b> from last month</span>
         </div>
     </div>
     <div class="pagination-ribbon">
@@ -1364,7 +1370,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             </select>
                         </td>
                         <td>
-                            <select class="data-input" data-field="gstStatus" ${readOnlyAttribute}>
+                            <select class="data-input gst-${(rowData.gstStatus || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}" data-field="gstStatus" ${readOnlyAttribute}>
                                 <option value="" ${rowData.gstStatus === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Filed" ${rowData.gstStatus === 'Filed' ? 'selected' : ''}>Filed</option>
                                 <option value="Pending" ${rowData.gstStatus === 'Pending' ? 'selected' : ''}>Pending</option>
