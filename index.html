@@ -576,6 +576,7 @@
         .summary-pill::before { content:'▰'; position:absolute; left:24px; top:24px; width:46px; height:46px; border-radius:50%; display:grid; place-items:center; background:#eef2ff; color:#5b41e8; font-size:27px; }
         .summary-pill.priority { border-left-color:#f43f5e; } .summary-pill.priority::before { content:'⚠'; background:#fff1f2; color:#f43f5e; font-size:25px; }
         .summary-pill.complete { border-left-color:#22c55e; } .summary-pill.complete::before { content:'✓'; background:#ecfdf5; color:#16a34a; font-size:31px; font-weight:800; }
+        .summary-pill:nth-child(4) { border-left-color:#2563eb; } .summary-pill:nth-child(4)::before { content:'●'; background:#eff6ff; color:#2563eb; font-size:30px; }
         .summary-label { font-size:11px; color:#536886; } .summary-value { margin-top:7px; font-size:24px; }
         .pagination-ribbon { padding:12px; border-color:#e5edf9; box-shadow:0 4px 16px rgba(37,99,235,.05); }
         .pagination-container button { background:#fff; border:1px solid #cbd9ff; color:#4f46e5; border-radius:7px; padding:9px 15px; }
@@ -587,6 +588,12 @@
         .datagrid-table td { padding:8px 10px; background:#fff; border-bottom-color:#edf2fa; border-right:0; color:#1f3655; }
         .datagrid-table tbody tr:nth-child(even) td { background:#fbfdff; } .datagrid-table tbody tr:hover td { background:#f4f8ff; }
         .header-filter-input { border-color:#dce6f6; border-radius:6px; background:#fbfdff; } .footer-ticker { background:#fff; border-top-color:#e5edf9; color:#667a97; }
+        .select-status-inline { border:0; font-weight:700; text-align:center; }
+        .status-allocated { color:#16803d !important; background:#eaf9f0 !important; } .status-in-progress { color:#2563eb !important; background:#eff6ff !important; }
+        .status-meeting-required { color:#2563eb !important; background:#eaf3ff !important; } .status-pending { color:#ea6a00 !important; background:#fff7e8 !important; }
+        .status-draft-sent { color:#7c3aed !important; background:#f3edff !important; } .status-missing { color:#f43f5e !important; background:#fff0f3 !important; }
+        .priority-normal { color:#2563eb !important; background:#eff6ff !important; } .priority-high .select-status-inline { color:#ea6a00 !important; background:#fff7e8 !important; }
+        .priority-urgent .select-status-inline { color:#f43f5e !important; background:#fff0f3 !important; }
         .theme-welcome-modal[hidden] { display:none; } .theme-welcome-modal { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:24px; background:rgba(16,35,65,.42); backdrop-filter:blur(4px); }
         .theme-welcome-card { width:min(820px,100%); overflow:hidden; border-radius:20px; background:#fff; box-shadow:0 28px 80px rgba(22,40,75,.3); }
         .theme-welcome-main { display:grid; grid-template-columns:1fr .92fr; gap:28px; padding:48px 42px 34px; }
@@ -1366,7 +1373,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             </select>
                         </td>
                         <td>
-                            <select class="select-status-inline data-input" data-field="status" ${readOnlyAttribute}>
+                            <select class="select-status-inline data-input status-${(rowData.status || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}" data-field="status" ${readOnlyAttribute}>
                                 <option value="" ${rowData.status === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Allocated" ${rowData.status === 'Allocated' ? 'selected' : ''}>Allocated</option>
                                 <option value="In Progress" ${rowData.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
@@ -1386,7 +1393,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             </select>
                         </td>
                         <td>
-                            <select class="select-status-inline data-input" data-field="priority" ${readOnlyAttribute}>
+                            <select class="select-status-inline data-input priority-${(rowData.priority || '').toString().trim().toLowerCase()}" data-field="priority" ${readOnlyAttribute}>
                                 <option value="" ${rowData.priority === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Normal" ${rowData.priority === 'Normal' ? 'selected' : ''}>Normal</option>
                                 <option value="High" ${rowData.priority === 'High' ? 'selected' : ''}>High</option>
