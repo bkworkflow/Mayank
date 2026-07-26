@@ -583,17 +583,19 @@
         .pagination-container #next-page-button { color:#fff; border-color:#3155df; background:linear-gradient(135deg,#3155df,#1d4ed8); }
         .pagination-container #delete-selected-button { min-width:40px; padding:8px 11px; color:#111827; border-color:transparent; background:transparent; font-size:20px; line-height:1; }
         .pagination-container #delete-selected-button:not(:disabled):hover { background:#f3f4f6; color:#000; }
+        .quick-filters { display:flex; align-items:center; gap:8px; margin-left:20px; } .quick-filters span { color:#52627b; font-size:11px; font-weight:750; margin-right:4px; }
+        .quick-filters button { padding:8px 15px; color:#374151; border-color:#e0e7f2; background:#fff; } .quick-filters button:first-of-type { color:#3155df; border-color:#d6e1ff; background:#f8faff; }
         .datagrid-overflow-container { border-color:#e5edf9; border-radius:9px; max-height:calc(100vh - 212px); }
         .datagrid-table { font-size:12px; } .datagrid-table th { color:#4f46e5; background:#fff; padding:13px 12px 10px; border-bottom:1px solid #dce7f8; border-right:0; }
         .datagrid-table td { padding:8px 10px; background:#fff; border-bottom-color:#edf2fa; border-right:0; color:#1f3655; }
         .datagrid-table tbody tr:nth-child(even) td { background:#fbfdff; } .datagrid-table tbody tr:hover td { background:#f4f8ff; }
         .header-filter-input { border-color:#dce6f6; border-radius:6px; background:#fbfdff; } .footer-ticker { background:#fff; border-top-color:#e5edf9; color:#667a97; }
-        .select-status-inline { border:0; font-weight:700; text-align:center; }
-        .status-allocated { color:#16803d !important; background:#eaf9f0 !important; } .status-in-progress { color:#2563eb !important; background:#eff6ff !important; }
-        .status-meeting-required { color:#2563eb !important; background:#eaf3ff !important; } .status-pending { color:#ea6a00 !important; background:#fff7e8 !important; }
-        .status-draft-sent { color:#7c3aed !important; background:#f3edff !important; } .status-missing { color:#f43f5e !important; background:#fff0f3 !important; }
-        .priority-normal { color:#2563eb !important; background:#eff6ff !important; } .priority-high .select-status-inline { color:#ea6a00 !important; background:#fff7e8 !important; }
-        .priority-urgent .select-status-inline { color:#f43f5e !important; background:#fff0f3 !important; }
+        .datagrid-table td select.select-status-inline { border:0; font-weight:700; text-align:center; }
+        .datagrid-table td select.status-allocated { color:#16803d !important; background:#eaf9f0 !important; } .datagrid-table td select.status-in-progress { color:#2563eb !important; background:#eff6ff !important; }
+        .datagrid-table td select.status-meeting-required { color:#2563eb !important; background:#eaf3ff !important; } .datagrid-table td select.status-pending { color:#ea6a00 !important; background:#fff7e8 !important; }
+        .datagrid-table td select.status-draft-sent { color:#7c3aed !important; background:#f3edff !important; } .datagrid-table td select.status-missing { color:#f43f5e !important; background:#fff0f3 !important; }
+        .datagrid-table td select.priority-normal { color:#2563eb !important; background:#eff6ff !important; } .priority-high td select[data-field="priority"] { color:#ea6a00 !important; background:#fff7e8 !important; }
+        .priority-urgent td select[data-field="priority"] { color:#f43f5e !important; background:#fff0f3 !important; }
         .theme-welcome-modal[hidden] { display:none; } .theme-welcome-modal { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:24px; background:rgba(16,35,65,.42); backdrop-filter:blur(4px); }
         .theme-welcome-card { width:min(820px,100%); overflow:hidden; border-radius:20px; background:#fff; box-shadow:0 28px 80px rgba(22,40,75,.3); }
         .theme-welcome-main { display:grid; grid-template-columns:1fr .92fr; gap:28px; padding:48px 42px 34px; }
@@ -694,6 +696,14 @@
             <button type="button" id="prev-page-button" onclick="changePage(-1)">Previous</button>
             <button type="button" id="next-page-button" onclick="changePage(1)">Next</button>
             <button type="button" id="delete-selected-button" onclick="deleteSelectedJobs()" hidden disabled title="Delete selected job(s)">&#128465; Delete selected</button>
+            <div class="quick-filters" aria-label="Quick filters">
+                <span>Quick Filters:</span>
+                <button type="button" onclick="applyQuickFilter('all')">All</button>
+                <button type="button" onclick="applyQuickFilter('mine')">My Jobs</button>
+                <button type="button" onclick="applyQuickFilter('urgent')">Urgent</button>
+                <button type="button" onclick="applyQuickFilter('pending')">Pending</button>
+                <button type="button" onclick="applyQuickFilter('completed')">Completed</button>
+            </div>
             <span class="pagination-status" id="pagination-status">Rows 1-100 of 1000</span>
         </div>
     </div>
@@ -1412,6 +1422,16 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
 
     function handleFilterChange(field, value) {
         activeFilters[field] = value;
+        currentPage = 1;
+        drawTrackingInterface();
+    }
+
+    function applyQuickFilter(filterName) {
+        Object.keys(activeFilters).forEach(field => { activeFilters[field] = ''; });
+        if (filterName === 'mine' && currentUserProfile) activeFilters.allocTo = currentUserProfile.staffName;
+        if (filterName === 'urgent') activeFilters.priority = 'Urgent';
+        if (filterName === 'pending') activeFilters.gstStatus = 'Pending';
+        if (filterName === 'completed') activeFilters.status = 'Completed';
         currentPage = 1;
         drawTrackingInterface();
     }
