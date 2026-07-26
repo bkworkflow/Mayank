@@ -1337,20 +1337,6 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         }
 
         storedData[rowIndex][fieldName] = fieldValue;
-        // Preserve the staff member at the exact point they hand a file to Mayank.
-        // This is append-only in practice: Mayank's later edits never clear the history.
-        const handingToMaster = !isMasterUser() &&
-            historicalAllocTo === currentUserProfile.staffName &&
-            fieldName === 'allocTo' && fieldValue === 'Mayank Bhatia';
-        if (handingToMaster) {
-            const workers = getHistoricalWorkers(storedData[rowIndex]);
-            if (!workers.includes(currentUserProfile.staffName)) {
-                workers.push(currentUserProfile.staffName);
-            }
-            storedData[rowIndex].previousAllocTo = currentUserProfile.staffName;
-            storedData[rowIndex].historicalWorkers = workers;
-        }
-
         const wasSaved = await saveRowToServer(rowIndex, storedData[rowIndex], rowBeforeEdit);
         drawTrackingInterface();
         if (!wasSaved) return;
@@ -1479,8 +1465,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         const numericRowId = Number(rowIndex);
         const allowedFields = [
             'client', 'jobId', 'yearEnd', 'yearEndYear', 'type', 'allocDate', 'expDate',
-            'craAuth', 'gstStatus', 'allocTo', 'status', 'priority', 'lastOverdueNotificationDate',
-            'previousAllocTo', 'historicalWorkers'
+            'craAuth', 'gstStatus', 'allocTo', 'status', 'priority', 'lastOverdueNotificationDate'
         ];
         const cleanRowData = { id: numericRowId };
 
