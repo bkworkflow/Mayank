@@ -859,6 +859,7 @@
     const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
     const SESSION_STARTED_AT_STORAGE_KEY = 'ctcSessionStartedAt';
     const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+    let sessionExpirationTimer = null;
 
     function normalizeEmail(email) {
         return (email || '').toString().trim().toLowerCase();
@@ -926,7 +927,20 @@
             localStorage.removeItem(SESSION_STARTED_AT_STORAGE_KEY);
             await supabaseClient.auth.signOut();
             showLoggedOutState('Your 24-hour session has ended. Please log in again.');
+            return true;
         }
+        return false;
+    }
+
+    function scheduleSessionExpiration() {
+        if (sessionExpirationTimer) clearTimeout(sessionExpirationTimer);
+        const sessionStartedAt = Number(localStorage.getItem(SESSION_STARTED_AT_STORAGE_KEY));
+        if (!Number.isFinite(sessionStartedAt) || sessionStartedAt <= 0) return;
+
+        const remainingMs = Math.max(0, sessionStartedAt + SESSION_MAX_AGE_MS - Date.now());
+        sessionExpirationTimer = setTimeout(() => {
+            enforceTwentyFourHourLogout();
+        }, remainingMs);
     }
 
     function getHistoricalWorkers(rowData) {
@@ -1069,6 +1083,7 @@
 
         currentUserProfile = profile;
         selectedJobIds.clear();
+        if (await enforceTwentyFourHourLogout()) return;
         const userLabel = document.getElementById('current-user-label');
         if (userLabel) {
             userLabel.textContent = `${profile.staffName}${isMasterUser() ? ' (Master)' : ''}`;
@@ -1076,11 +1091,13 @@
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
         showThemeWelcome();
-        await enforceTwentyFourHourLogout();
+        scheduleSessionExpiration();
         await enforceSaturdayLogout();
     }
 
     function showLoggedOutState(message = '') {
+        if (sessionExpirationTimer) clearTimeout(sessionExpirationTimer);
+        sessionExpirationTimer = null;
         currentUserProfile = null;
         storedData = {};
         document.body.classList.add('auth-locked');
@@ -1117,6 +1134,7 @@
     }
 
     async function handleLogout() {
+        localStorage.removeItem(SESSION_STARTED_AT_STORAGE_KEY);
         await supabaseClient.auth.signOut();
         showLoggedOutState('');
     }
