@@ -388,6 +388,16 @@
             text-decoration: line-through;
         }
 
+        .row-historical-readonly td {
+            box-shadow: inset 3px 0 0 #8aa0ae;
+        }
+
+        .row-historical-readonly input:disabled,
+        .row-historical-readonly select:disabled {
+            cursor: not-allowed;
+            opacity: 0.78;
+        }
+
         .row-status-icon {
             display: inline-block;
             min-width: 18px;
@@ -617,6 +627,7 @@
         <div class="pagination-container">
             <button type="button" id="prev-page-button" onclick="changePage(-1)">Previous</button>
             <button type="button" id="next-page-button" onclick="changePage(1)">Next</button>
+            <button type="button" id="delete-selected-button" onclick="deleteSelectedJobs()" hidden disabled title="Delete selected job(s)">&#128465; Delete selected</button>
             <span class="pagination-status" id="pagination-status">Rows 1-100 of 1000</span>
         </div>
     </div>
@@ -628,7 +639,7 @@
                     <th style="width: 55px;">
                         <div class="th-content">
                             <div class="chk-col">
-                                <input type="checkbox" style="margin:0;">
+                                <input id="select-page-checkbox" type="checkbox" style="margin:0;" onchange="toggleCurrentPageSelection(this.checked)" disabled>
                                 <span>#</span>
                             </div>
                             <div style="height: 19px;"></div>
@@ -783,6 +794,7 @@
     let activeSort = { field: null, direction: 'asc' };
     let currentUserProfile = null;
     let currentPage = 1;
+    const selectedJobIds = new Set();
     const allocationEmailLocks = new Set();
     const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
 
@@ -837,6 +849,36 @@
     function canViewRow(rowData) {
         if (isMasterUser()) return true;
         if (!currentUserProfile || !rowData) return false;
+        return (rowData.allocTo || '') === currentUserProfile.staffName ||
+            getHistoricalWorkers(rowData).includes(currentUserProfile.staffName);
+    }
+
+    function getHistoricalWorkers(rowData) {
+        if (!rowData) return [];
+        let workers = [];
+        const storedHistory = rowData.historicalWorkers;
+
+        if (Array.isArray(storedHistory)) {
+            workers = storedHistory;
+        } else if (typeof storedHistory === 'string' && storedHistory.trim()) {
+            try {
+                const parsedHistory = JSON.parse(storedHistory);
+                workers = Array.isArray(parsedHistory) ? parsedHistory : [];
+            } catch (_error) {
+                // A malformed or legacy value must never prevent the row from loading.
+                workers = [];
+            }
+        }
+
+        if (rowData.previousAllocTo) workers.push(rowData.previousAllocTo);
+        return [...new Set(workers.map(worker => (worker || '').toString().trim()).filter(Boolean))];
+    }
+
+    function canEditRow(rowData) {
+        if (isMasterUser()) return true;
+        if (!currentUserProfile || !rowData) return false;
+        // A staff member can edit only a row currently allocated to them; historical
+        // visibility is deliberately read-only.
         return (rowData.allocTo || '') === currentUserProfile.staffName;
     }
 
@@ -855,6 +897,73 @@
 
         if (previousButton) previousButton.disabled = currentPage <= 1;
         if (nextButton) nextButton.disabled = currentPage >= totalPages;
+        updateDeleteControls();
+    }
+
+    function updateDeleteControls() {
+        const deleteButton = document.getElementById('delete-selected-button');
+        const selectPageCheckbox = document.getElementById('select-page-checkbox');
+        const masterCanDelete = isMasterUser();
+
+        if (deleteButton) {
+            deleteButton.hidden = !masterCanDelete;
+            deleteButton.disabled = !masterCanDelete || selectedJobIds.size === 0;
+            deleteButton.textContent = selectedJobIds.size > 0
+                ? `🗑 Delete selected (${selectedJobIds.size})`
+                : '🗑 Delete selected';
+        }
+        if (selectPageCheckbox) {
+            selectPageCheckbox.disabled = !masterCanDelete;
+            selectPageCheckbox.style.visibility = masterCanDelete ? 'visible' : 'hidden';
+            const pageCheckboxes = [...document.querySelectorAll('.job-delete-checkbox')];
+            const selectedOnPage = pageCheckboxes.filter(checkbox => checkbox.checked).length;
+            selectPageCheckbox.checked = pageCheckboxes.length > 0 && selectedOnPage === pageCheckboxes.length;
+            selectPageCheckbox.indeterminate = selectedOnPage > 0 && selectedOnPage < pageCheckboxes.length;
+        }
+    }
+
+    function toggleJobSelection(rowId, checked) {
+        if (!isMasterUser()) return;
+        if (checked) selectedJobIds.add(Number(rowId));
+        else selectedJobIds.delete(Number(rowId));
+        updateDeleteControls();
+    }
+
+    function toggleCurrentPageSelection(checked) {
+        if (!isMasterUser()) return;
+        document.querySelectorAll('.job-delete-checkbox').forEach(checkbox => {
+            checkbox.checked = checked;
+            toggleJobSelection(checkbox.dataset.rowId, checked);
+        });
+        updateDeleteControls();
+    }
+
+    async function deleteSelectedJobs() {
+        if (!isMasterUser() || selectedJobIds.size === 0) return;
+
+        const jobsToDelete = [...selectedJobIds];
+        const wording = jobsToDelete.length === 1
+            ? 'Are you sure you want to delete this Job?'
+            : `Are you sure you want to delete these ${jobsToDelete.length} Jobs?`;
+        if (!window.confirm(wording)) return;
+
+        setSyncStatus('Deleting...', '#0076a8');
+        const { error } = await supabaseClient
+            .from('workflow')
+            .delete()
+            .in('id', jobsToDelete);
+
+        if (error) {
+            setSyncStatus('Delete failed', '#b00020');
+            console.error('Error deleting job(s) from Supabase:', error);
+            alert(`Delete failed: ${error.message}`);
+            return;
+        }
+
+        jobsToDelete.forEach(rowId => delete storedData[rowId]);
+        selectedJobIds.clear();
+        setSyncStatus('Deleted', '#0369a1');
+        drawTrackingInterface();
     }
 
     function changePage(direction) {
@@ -872,6 +981,7 @@
         }
 
         currentUserProfile = profile;
+        selectedJobIds.clear();
         const userLabel = document.getElementById('current-user-label');
         if (userLabel) {
             userLabel.textContent = `${profile.staffName}${isMasterUser() ? ' (Master)' : ''}`;
@@ -956,12 +1066,21 @@
         return normalizedStatus === 'signed' || normalizedStatus === 'completed';
     }
 
+    function isFinalWorkflowRow(rowData) {
+        return isCompletedStatus(rowData && rowData.status) ||
+            ((rowData && rowData.gstStatus) || '').toString().trim().toLowerCase() === 'filed';
+    }
+
     function updateWorkflowSummary() {
         const rows = Object.values(storedData).filter(row => row && canViewRow(row) && (row.client || row.jobId || row.allocTo || row.status));
-        const completed = rows.filter(row => isCompletedStatus(row.status)).length;
+        const completed = rows.filter(row => isFinalWorkflowRow(row)).length;
         const priority = rows.filter(row => row.priority === 'High' || row.priority === 'Urgent').length;
-        const assigned = rows.filter(row => row.allocTo && !isCompletedStatus(row.status)).length;
-        const active = rows.length - completed;
+        // Historical rows are visible to staff, but are not currently assigned/active work.
+        const currentWorkRows = isMasterUser()
+            ? rows
+            : rows.filter(row => (row.allocTo || '') === currentUserProfile.staffName);
+        const assigned = currentWorkRows.filter(row => row.allocTo && !isFinalWorkflowRow(row)).length;
+        const active = currentWorkRows.filter(row => !isFinalWorkflowRow(row)).length;
 
         const values = {
             'summary-active': active,
@@ -997,8 +1116,8 @@
         indexList.sort((indexA, indexB) => {
             const rowA = storedData[indexA] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
             const rowB = storedData[indexB] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
-            const rowAFinished = isCompletedStatus(rowA.status);
-            const rowBFinished = isCompletedStatus(rowB.status);
+            const rowAFinished = isFinalWorkflowRow(rowA);
+            const rowBFinished = isFinalWorkflowRow(rowB);
 
             if (rowAFinished !== rowBFinished) return rowAFinished ? 1 : -1;
 
@@ -1029,27 +1148,31 @@
         } else {
             pageIndexList.forEach((index, visibleOffset) => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
-const isFinished = isCompletedStatus(rowData.status);
+const isFinished = isFinalWorkflowRow(rowData);
+const isReadOnly = !canEditRow(rowData);
+const readOnlyAttribute = isReadOnly ? 'disabled aria-readonly="true"' : '';
+const historicalOwnerLabel = isReadOnly ? getHistoricalWorkers(rowData).join(', ') : '';
 const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                 htmlBuffer += `
     <tr data-row-index="${index}" 
-        class="${isFinished ? 'row-signed-completed' : ''} ${
+        title="${isReadOnly ? `Previously worked by: ${escapeInputText(historicalOwnerLabel)}. This row is locked because it is now with Mayank Bhatia.` : ''}"
+        class="${isFinished ? 'row-signed-completed' : ''} ${isReadOnly ? 'row-historical-readonly' : ''} ${
             rowData.priority === 'Urgent' ? 'priority-urgent' : 
             rowData.priority === 'High' ? 'priority-high' : ''
         }">
                         <td>
                             <div class="chk-col">
-                                <input type="checkbox" style="margin:0;">
+                                ${isMasterUser() && storedData[index] ? `<input class="job-delete-checkbox" data-row-id="${index}" type="checkbox" style="margin:0;" ${selectedJobIds.has(index) ? 'checked' : ''} onchange="toggleJobSelection(${index}, this.checked)">` : '<span style="display:inline-block; width:13px;"></span>'}
                                 <span style="color: #777777;">
-    ${isFinished ? '<span class="row-status-icon row-lock-icon">&#128274;</span>' : ''}${!isFinished && (rowData.priority === 'High' || rowData.priority === 'Urgent') ? '<span class="row-status-icon row-priority-flag">&#128681;</span>' : ''}${visibleSerialNumber}
+    ${isFinished || isReadOnly ? '<span class="row-status-icon row-lock-icon" title="Read-only">&#128274;</span>' : ''}${!isFinished && (rowData.priority === 'High' || rowData.priority === 'Urgent') ? '<span class="row-status-icon row-priority-flag">&#128681;</span>' : ''}${visibleSerialNumber}
 </span>
                             </div>
                         </td>
-                        <td><input type="text" class="data-input" data-field="client" value="${escapeInputText(rowData.client)}" placeholder="Client Name" style="font-weight: 500; color: #00567a;"></td>
-                        <td><input type="text" class="data-input" data-field="jobId" value="${escapeInputText(rowData.jobId)}" placeholder="Job ID"></td>
+                        <td><input type="text" class="data-input" data-field="client" value="${escapeInputText(rowData.client)}" placeholder="Client Name" style="font-weight: 500; color: #00567a;" ${readOnlyAttribute}></td>
+                        <td><input type="text" class="data-input" data-field="jobId" value="${escapeInputText(rowData.jobId)}" placeholder="Job ID" ${readOnlyAttribute}></td>
  <td style="min-width:180px;">
                             <div style="display:flex;gap:4px;">
-                            <select class="data-input" data-field="yearEnd" style="flex:1;">
+                            <select class="data-input" data-field="yearEnd" style="flex:1;" ${readOnlyAttribute}>
                                 <option value="" ${rowData.yearEnd === '' ? 'selected' : ''}>Month...</option>
                                 <option value="January" ${rowData.yearEnd === 'January' ? 'selected' : ''}>January</option>
                                 <option value="February" ${rowData.yearEnd === 'February' ? 'selected' : ''}>February</option>
@@ -1064,7 +1187,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                                 <option value="November" ${rowData.yearEnd === 'November' ? 'selected' : ''}>November</option>
                                 <option value="December" ${rowData.yearEnd === 'December' ? 'selected' : ''}>December</option>
                             </select>
-                            <select class="data-input" data-field="yearEndYear" style="flex:1;">
+                            <select class="data-input" data-field="yearEndYear" style="flex:1;" ${readOnlyAttribute}>
                                 <option value="" ${rowData.yearEndYear === '' ? 'selected' : ''}>Year...</option>
                                 <option value="2020" ${rowData.yearEndYear === '2020' ? 'selected' : ''}>2020</option>
                                 <option value="2021" ${rowData.yearEndYear === '2021' ? 'selected' : ''}>2021</option>
@@ -1077,7 +1200,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             </div>
                        </td>
 <td>
-                            <select class="data-input" data-field="type">
+                            <select class="data-input" data-field="type" ${readOnlyAttribute}>
                                 <option value="" ${rowData.type === '' ? 'selected' : ''}>Select...</option>
                                 <option value="T2" ${rowData.type === 'T2' ? 'selected' : ''}>T2</option>
                                 <option value="Monthly BK" ${rowData.type === 'Monthly BK' ? 'selected' : ''}>Monthly BK</option>
@@ -1092,17 +1215,17 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                                 <option value="T5018" ${rowData.type === 'T5018' ? 'selected' : ''}>T5018</option>
                             </select>
                         </td>
-                        <td><input type="date" class="data-input" data-field="allocDate" value="${escapeInputText(rowData.allocDate)}"></td>
-                        <td><input type="date" class="data-input" data-field="expDate" value="${escapeInputText(rowData.expDate)}"></td>
+                        <td><input type="date" class="data-input" data-field="allocDate" value="${escapeInputText(rowData.allocDate)}" ${readOnlyAttribute}></td>
+                        <td><input type="date" class="data-input" data-field="expDate" value="${escapeInputText(rowData.expDate)}" ${readOnlyAttribute}></td>
                         <td>
-                            <select class="data-input" data-field="craAuth">
+                            <select class="data-input" data-field="craAuth" ${readOnlyAttribute}>
                                 <option value="" ${rowData.craAuth === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Yes" ${rowData.craAuth === 'Yes' ? 'selected' : ''}>Yes</option>
                                 <option value="No (Email Sent)" ${rowData.craAuth === 'No (Email Sent)' ? 'selected' : ''}>No (Email Sent)</option>
                             </select>
                         </td>
                         <td>
-                            <select class="data-input" data-field="gstStatus">
+                            <select class="data-input" data-field="gstStatus" ${readOnlyAttribute}>
                                 <option value="" ${rowData.gstStatus === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Filed" ${rowData.gstStatus === 'Filed' ? 'selected' : ''}>Filed</option>
                                 <option value="Pending" ${rowData.gstStatus === 'Pending' ? 'selected' : ''}>Pending</option>
@@ -1111,7 +1234,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                         </td>
 
                         <td>
-                            <select class="data-input" data-field="allocTo">
+                            <select class="data-input" data-field="allocTo" ${readOnlyAttribute}>
                                 <option value="" ${rowData.allocTo === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Mayank Bhatia" ${rowData.allocTo === 'Mayank Bhatia' ? 'selected' : ''}>Mayank Bhatia</option>
                                 <option value="Sahil Thakur" ${rowData.allocTo === 'Sahil Thakur' ? 'selected' : ''}>Sahil Thakur</option>
@@ -1121,7 +1244,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             </select>
                         </td>
                         <td>
-                            <select class="select-status-inline data-input" data-field="status">
+                            <select class="select-status-inline data-input" data-field="status" ${readOnlyAttribute}>
                                 <option value="" ${rowData.status === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Allocated" ${rowData.status === 'Allocated' ? 'selected' : ''}>Allocated</option>
                                 <option value="In Progress" ${rowData.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
@@ -1141,7 +1264,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                             </select>
                         </td>
                         <td>
-                            <select class="select-status-inline data-input" data-field="priority">
+                            <select class="select-status-inline data-input" data-field="priority" ${readOnlyAttribute}>
                                 <option value="" ${rowData.priority === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Normal" ${rowData.priority === 'Normal' ? 'selected' : ''}>Normal</option>
                                 <option value="High" ${rowData.priority === 'High' ? 'selected' : ''}>High</option>
@@ -1197,9 +1320,10 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         const fieldName = element.getAttribute('data-field');
         const fieldValue = element.value;
         const visibleRow = storedData[rowIndex] || {};
+        const rowBeforeEdit = { ...visibleRow };
 
-        if (!isMasterUser() && !canViewRow(visibleRow)) {
-            alert('You can only edit files allocated to your login.');
+        if (!canEditRow(visibleRow)) {
+            alert('This file is visible for reference only and is locked for your login.');
             drawTrackingInterface();
             return;
         }
@@ -1213,8 +1337,23 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         }
 
         storedData[rowIndex][fieldName] = fieldValue;
-        await saveRowToServer(rowIndex, storedData[rowIndex]);
+        // Preserve the staff member at the exact point they hand a file to Mayank.
+        // This is append-only in practice: Mayank's later edits never clear the history.
+        const handingToMaster = !isMasterUser() &&
+            historicalAllocTo === currentUserProfile.staffName &&
+            fieldName === 'allocTo' && fieldValue === 'Mayank Bhatia';
+        if (handingToMaster) {
+            const workers = getHistoricalWorkers(storedData[rowIndex]);
+            if (!workers.includes(currentUserProfile.staffName)) {
+                workers.push(currentUserProfile.staffName);
+            }
+            storedData[rowIndex].previousAllocTo = currentUserProfile.staffName;
+            storedData[rowIndex].historicalWorkers = workers;
+        }
+
+        const wasSaved = await saveRowToServer(rowIndex, storedData[rowIndex], rowBeforeEdit);
         drawTrackingInterface();
+        if (!wasSaved) return;
 
         const currentStatus = storedData[rowIndex].status;
         const currentAllocTo = storedData[rowIndex].allocTo;
@@ -1287,14 +1426,14 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
             const rowData = storedData[index];
             if (!rowData || !rowData.allocTo) return;
             if (!canViewRow(rowData)) return;
-            if (isCompletedStatus(rowData.status)) return;
+            if (isFinalWorkflowRow(rowData)) return;
             if (!rowData.client && !rowData.jobId) return;
             if (!rowData.expDate) return;
 
             const expectedDate = new Date(`${rowData.expDate}T00:00:00`);
             if (Number.isNaN(expectedDate.getTime()) || expectedDate >= todayDate) return;
 
-            if (rowData.lastOverdueNotificationDate !== todayString) {
+            if (rowData.lastOverdueNotificationDate !== todayString && canEditRow(rowData)) {
                 dispatchPendingReminderEmail(rowData);
                 rowData.lastOverdueNotificationDate = todayString;
                 saveRowToServer(index, rowData);
@@ -1331,12 +1470,17 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         return rawString.replace(/[&<>'"]/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[match] || match));
     }
 
-    async function saveRowToServer(rowIndex, rowData) {
+    async function saveRowToServer(rowIndex, rowData, authorizationRow = null) {
         if (!currentUserProfile) return false;
+        if (!canEditRow(authorizationRow || storedData[rowIndex] || rowData)) {
+            console.warn('Blocked attempt to save a read-only historical row.', rowIndex);
+            return false;
+        }
         const numericRowId = Number(rowIndex);
         const allowedFields = [
             'client', 'jobId', 'yearEnd', 'yearEndYear', 'type', 'allocDate', 'expDate',
-            'craAuth', 'gstStatus', 'allocTo', 'status', 'priority', 'lastOverdueNotificationDate'
+            'craAuth', 'gstStatus', 'allocTo', 'status', 'priority', 'lastOverdueNotificationDate',
+            'previousAllocTo', 'historicalWorkers'
         ];
         const cleanRowData = { id: numericRowId };
 
