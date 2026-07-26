@@ -818,7 +818,7 @@
 <script>
 
     const tableBodyElement = document.getElementById('trackingTableBody');
-    const TOTAL_LINES_LIMIT = 1000;
+    const TOTAL_LINES_LIMIT = 500;
     const ROWS_PER_PAGE = 100;
     const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
     const THEME_WELCOME_END_DATE = new Date('2026-08-02T23:59:59');
@@ -857,6 +857,8 @@
     const selectedJobIds = new Set();
     const allocationEmailLocks = new Set();
     const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
+    const SESSION_STARTED_AT_STORAGE_KEY = 'ctcSessionStartedAt';
+    const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
     function normalizeEmail(email) {
         return (email || '').toString().trim().toLowerCase();
@@ -911,6 +913,20 @@
         if (!currentUserProfile || !rowData) return false;
         return (rowData.allocTo || '') === currentUserProfile.staffName ||
             getHistoricalWorkers(rowData).includes(currentUserProfile.staffName);
+    }
+
+    async function enforceTwentyFourHourLogout() {
+        if (!currentUserProfile) return;
+        let sessionStartedAt = Number(localStorage.getItem(SESSION_STARTED_AT_STORAGE_KEY));
+        if (!Number.isFinite(sessionStartedAt) || sessionStartedAt <= 0) {
+            sessionStartedAt = Date.now();
+            localStorage.setItem(SESSION_STARTED_AT_STORAGE_KEY, String(sessionStartedAt));
+        }
+        if (Date.now() - sessionStartedAt >= SESSION_MAX_AGE_MS) {
+            localStorage.removeItem(SESSION_STARTED_AT_STORAGE_KEY);
+            await supabaseClient.auth.signOut();
+            showLoggedOutState('Your 24-hour session has ended. Please log in again.');
+        }
     }
 
     function getHistoricalWorkers(rowData) {
@@ -1060,6 +1076,7 @@
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
         showThemeWelcome();
+        await enforceTwentyFourHourLogout();
         await enforceSaturdayLogout();
     }
 
@@ -1095,6 +1112,7 @@
             showLoggedOutState(error.message);
             return;
         }
+        localStorage.setItem(SESSION_STARTED_AT_STORAGE_KEY, String(Date.now()));
         await applyLoggedInUser(data.user);
     }
 
@@ -1123,6 +1141,7 @@
         });
 
         setInterval(enforceSaturdayLogout, 60000);
+        setInterval(enforceTwentyFourHourLogout, 60000);
     }
 
     function setSyncStatus(message, color = '#555555') {
@@ -1139,7 +1158,8 @@
     }
 
     function isFinalWorkflowRow(rowData) {
-        return isCompletedStatus(rowData && rowData.status) ||
+        const status = ((rowData && rowData.status) || '').toString().trim().toLowerCase();
+        return isCompletedStatus(status) || status === 'filed' ||
             ((rowData && rowData.gstStatus) || '').toString().trim().toLowerCase() === 'filed';
     }
 
@@ -1204,6 +1224,17 @@
 
             return indexA - indexB;
         });
+
+        // Keep saved jobs together after a deletion; empty slots remain at the end.
+        const hasActiveFilter = Object.values(activeFilters).some(value => value.trim());
+        if (isMasterUser() && !hasActiveFilter) {
+            const activeJobs = indexList.filter(index => !isFinalWorkflowRow(storedData[index]));
+            const finalJobs = indexList.filter(index => isFinalWorkflowRow(storedData[index]));
+            const emptySlotCount = Math.max(0, TOTAL_LINES_LIMIT - indexList.length);
+            const emptySlots = Array.from({ length: emptySlotCount }, (_unused, slot) => `new-${slot}`);
+            // Finalized jobs stay at the absolute bottom; new blank rows follow active jobs.
+            indexList = [...activeJobs, ...emptySlots, ...finalJobs];
+        }
 
         const totalRows = indexList.length;
         const totalPages = Math.max(1, Math.ceil(totalRows / ROWS_PER_PAGE));
@@ -1389,16 +1420,26 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         if (!element.classList.contains('data-input')) return;
 
         const row = element.closest('tr');
-        const rowIndex = row.getAttribute('data-row-index');
+        let rowIndex = row.getAttribute('data-row-index');
         const fieldName = element.getAttribute('data-field');
         const fieldValue = element.value;
-        const visibleRow = storedData[rowIndex] || {};
+        const isNewRow = rowIndex.startsWith('new-');
+        const visibleRow = isNewRow ? {} : (storedData[rowIndex] || {});
         const rowBeforeEdit = { ...visibleRow };
 
         if (!canEditRow(visibleRow)) {
             alert('This file is visible for reference only and is locked for your login.');
             drawTrackingInterface();
             return;
+        }
+
+        if (isNewRow) {
+            rowIndex = getNextAvailableRowId();
+            if (rowIndex === null) {
+                alert('All 500 job rows are currently in use.');
+                drawTrackingInterface();
+                return;
+            }
         }
 
         const historicalStatus = storedData[rowIndex] ? storedData[rowIndex].status : '';
@@ -1430,6 +1471,13 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         if (shouldTriggerEmail && currentAllocTo) {
             triggerAllocationEmailAlert(rowIndex, storedData[rowIndex]);
         }
+    }
+
+    function getNextAvailableRowId() {
+        for (let id = 0; id < TOTAL_LINES_LIMIT; id++) {
+            if (!storedData[id]) return id;
+        }
+        return null;
     }
 
     function buildAllocationEmailKey(rowIndex, rowDetails) {
