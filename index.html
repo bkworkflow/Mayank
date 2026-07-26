@@ -564,6 +564,40 @@
                 grid-template-columns: repeat(2, minmax(140px, 1fr));
             }
         }
+
+        /* Refreshed white and sky-blue workspace theme */
+        :root { --firm-green:#2563eb; --firm-green-dark:#1d4ed8; --firm-red:#f43f5e; --firm-gold:#f59e0b; --ink:#172b4d; --muted:#64748b; --line:#e2e8f0; --panel:#fff; --panel-soft:#f8fbff; --page:#f4f8ff; --header:#fff; --focus:#2563eb; --complete:#ecfdf5; --urgent:#fff1f2; --high:#fff8e6; --shadow:0 8px 26px rgba(37,99,235,.08); }
+        body { background:linear-gradient(180deg,#f7fbff 0,#fff 260px); color:var(--ink); }
+        .navbar { min-height:64px; padding:10px 26px; border-bottom-color:#e7eefb; box-shadow:0 3px 18px rgba(30,64,175,.08); }
+        .logo-text { font-size:22px; font-weight:750; color:#1e3a5f; } .logo-text strong { color:#283df1; }
+        .center-company-title,.center-company-title .sub-corp { font-size:11px; color:#526b8d; } .center-company-title { border-left-color:#dbe6f8; }
+        .workspace-container { padding:22px 26px 54px; } .workflow-summary { gap:14px; margin-bottom:18px; }
+        .summary-pill { min-height:100px; display:flex; flex-direction:column; justify-content:center; border:1px solid #e2eafa; border-left:3px solid #2563eb; border-radius:9px; padding:16px 20px 16px 96px; position:relative; box-shadow:0 5px 18px rgba(37,99,235,.06); }
+        .summary-pill::before { content:'▰'; position:absolute; left:24px; top:24px; width:46px; height:46px; border-radius:50%; display:grid; place-items:center; background:#eef2ff; color:#5b41e8; font-size:27px; }
+        .summary-pill.priority { border-left-color:#f43f5e; } .summary-pill.priority::before { content:'⚠'; background:#fff1f2; color:#f43f5e; font-size:25px; }
+        .summary-pill.complete { border-left-color:#22c55e; } .summary-pill.complete::before { content:'✓'; background:#ecfdf5; color:#16a34a; font-size:31px; font-weight:800; }
+        .summary-label { font-size:11px; color:#536886; } .summary-value { margin-top:7px; font-size:24px; }
+        .pagination-ribbon { padding:12px; border-color:#e5edf9; box-shadow:0 4px 16px rgba(37,99,235,.05); }
+        .pagination-container button { background:#fff; border:1px solid #cbd9ff; color:#4f46e5; border-radius:7px; padding:9px 15px; }
+        .pagination-container #next-page-button { color:#fff; border-color:#3155df; background:linear-gradient(135deg,#3155df,#1d4ed8); }
+        .pagination-container #delete-selected-button { min-width:40px; padding:8px 11px; color:#111827; border-color:transparent; background:transparent; font-size:20px; line-height:1; }
+        .pagination-container #delete-selected-button:not(:disabled):hover { background:#f3f4f6; color:#000; }
+        .datagrid-overflow-container { border-color:#e5edf9; border-radius:9px; max-height:calc(100vh - 212px); }
+        .datagrid-table { font-size:12px; } .datagrid-table th { color:#4f46e5; background:#fff; padding:13px 12px 10px; border-bottom:1px solid #dce7f8; border-right:0; }
+        .datagrid-table td { padding:8px 10px; background:#fff; border-bottom-color:#edf2fa; border-right:0; color:#1f3655; }
+        .datagrid-table tbody tr:nth-child(even) td { background:#fbfdff; } .datagrid-table tbody tr:hover td { background:#f4f8ff; }
+        .header-filter-input { border-color:#dce6f6; border-radius:6px; background:#fbfdff; } .footer-ticker { background:#fff; border-top-color:#e5edf9; color:#667a97; }
+        .theme-welcome-modal[hidden] { display:none; } .theme-welcome-modal { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:24px; background:rgba(16,35,65,.42); backdrop-filter:blur(4px); }
+        .theme-welcome-card { width:min(820px,100%); overflow:hidden; border-radius:20px; background:#fff; box-shadow:0 28px 80px rgba(22,40,75,.3); }
+        .theme-welcome-main { display:grid; grid-template-columns:1fr .92fr; gap:28px; padding:48px 42px 34px; }
+        .theme-welcome-tag { display:inline-flex; gap:9px; align-items:center; padding:9px 14px; border-radius:9px; background:#f2edff; color:#6d35d2; font-weight:750; }
+        .theme-welcome-copy h2 { margin:20px 0 12px; color:#172b4d; font-size:40px; line-height:1.08; } .theme-welcome-copy h2 span { color:#7c3aed; } .theme-welcome-copy>p { color:#425673; font-size:16px; line-height:1.45; }
+        .theme-benefit { display:flex; gap:12px; align-items:flex-start; margin-top:16px; color:#41536e; } .theme-benefit b { display:block; color:#1d2c44; } .theme-benefit i { display:grid; place-items:center; flex:0 0 34px; height:34px; border-radius:50%; background:#7132c8; color:#fff; font-style:normal; }
+        .theme-preview { min-height:300px; align-self:center; display:grid; place-items:center; border-radius:18px; background:radial-gradient(circle,#f0e5ff 0 35%,transparent 36%); } .theme-preview-window { width:100%; overflow:hidden; border-radius:10px; background:#fff; box-shadow:0 12px 28px rgba(90,44,170,.2); }
+        .theme-preview-bar { padding:11px 14px; background:linear-gradient(90deg,#4820a0,#7c31d8); color:#fff; font-size:11px; font-weight:750; } .theme-preview-lines { padding:18px; display:grid; gap:10px; } .theme-preview-lines span { display:block; height:14px; border-radius:4px; background:linear-gradient(90deg,#ede9fe 35%,#f6f4ff 35%); }
+        .theme-welcome-actions { display:flex; justify-content:flex-end; gap:12px; padding:26px 42px; background:#fbfaff; border-top:1px solid #f0ebfb; } .theme-welcome-actions button { border-radius:7px; padding:12px 22px; font-weight:750; cursor:pointer; }
+        .theme-welcome-actions .primary { border:1px solid #6d28d9; color:#fff; background:#7132c8; } .theme-welcome-actions .secondary { border:1px solid #7c4ad1; color:#35215b; background:#fff; }
+        @media (max-width:700px) { .theme-welcome-main { grid-template-columns:1fr; padding:32px 26px; } .theme-preview { display:none; } .theme-welcome-copy h2 { font-size:32px; } }
 </style>
 </head>
 <body class="auth-locked">
@@ -579,6 +613,31 @@
         <button id="login-submit" type="submit">Log in</button>
         <div class="login-error" id="login-error"></div>
     </form>
+</div>
+
+<div class="theme-welcome-modal" id="theme-welcome-modal" hidden role="dialog" aria-modal="true" aria-labelledby="theme-welcome-title">
+    <div class="theme-welcome-card">
+        <div class="theme-welcome-main">
+            <div class="theme-welcome-copy">
+                <div class="theme-welcome-tag">☆ &nbsp; What's New?</div>
+                <h2 id="theme-welcome-title">New Theme<br><span>Update!</span></h2>
+                <p>We've refreshed the look and feel of CTC Accounting Workflow to make your experience better than ever.</p>
+                <div class="theme-benefit"><i>✦</i><div><b>Modern &amp; Clean Design</b>Fresh sky-blue workspace with clearer information.</div></div>
+                <div class="theme-benefit"><i>↗</i><div><b>Improved User Experience</b>Better readability and smoother navigation.</div></div>
+                <div class="theme-benefit"><i>☀</i><div><b>Enhanced Productivity</b>Focus on what matters, we handle the rest.</div></div>
+            </div>
+            <div class="theme-preview" aria-hidden="true">
+                <div class="theme-preview-window">
+                    <div class="theme-preview-bar">CTC Accounting Workflow</div>
+                    <div class="theme-preview-lines"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="theme-welcome-actions">
+            <button class="primary" type="button" onclick="closeThemeWelcome()">Explore Now</button>
+            <button class="secondary" type="button" onclick="closeThemeWelcome()">Got it</button>
+        </div>
+    </div>
 </div>
 
 <div class="navbar">
@@ -762,6 +821,7 @@
     const TOTAL_LINES_LIMIT = 1000;
     const ROWS_PER_PAGE = 100;
     const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
+    const THEME_WELCOME_END_DATE = new Date('2026-08-02T23:59:59');
 
     const TEAM_EMAIL_DIRECTORY = {
         "Mayank Bhatia": "mayank@calgarytaxconsulting.com",
@@ -908,9 +968,10 @@
         if (deleteButton) {
             deleteButton.hidden = !masterCanDelete;
             deleteButton.disabled = !masterCanDelete || selectedJobIds.size === 0;
-            deleteButton.textContent = selectedJobIds.size > 0
-                ? `🗑 Delete selected (${selectedJobIds.size})`
-                : '🗑 Delete selected';
+            deleteButton.textContent = '🗑';
+            deleteButton.title = selectedJobIds.size > 0
+                ? `Delete ${selectedJobIds.size} selected job(s)`
+                : 'Select a job to delete';
         }
         if (selectPageCheckbox) {
             selectPageCheckbox.disabled = !masterCanDelete;
@@ -966,6 +1027,16 @@
         drawTrackingInterface();
     }
 
+    function showThemeWelcome() {
+        const modal = document.getElementById('theme-welcome-modal');
+        if (modal && new Date() <= THEME_WELCOME_END_DATE) modal.hidden = false;
+    }
+
+    function closeThemeWelcome() {
+        const modal = document.getElementById('theme-welcome-modal');
+        if (modal) modal.hidden = true;
+    }
+
     function changePage(direction) {
         currentPage += direction;
         if (currentPage < 1) currentPage = 1;
@@ -988,6 +1059,7 @@
         }
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
+        showThemeWelcome();
         await enforceSaturdayLogout();
     }
 
@@ -1097,11 +1169,12 @@
 
     function drawTrackingInterface() {
         let htmlBuffer = '';
-        let indexList = [];
-        for (let i = 0; i < TOTAL_LINES_LIMIT; i++) {
-            const rowData = storedData[i] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
-            if (canViewRow(rowData)) indexList.push(i);
-        }
+        let indexList = Object.keys(storedData)
+            .map(Number)
+            .filter(index => {
+                const rowData = storedData[index];
+                return rowData && (rowData.client || rowData.jobId || rowData.allocTo || rowData.status) && canViewRow(rowData);
+            });
 
         indexList = indexList.filter(index => {
             const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
