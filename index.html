@@ -1062,10 +1062,15 @@
         if (!window.confirm(wording)) return;
 
         setSyncStatus('Deleting...', '#0076a8');
-        const { error } = await supabaseClient
+        // Ask Supabase to return the IDs it actually deleted. With Row Level
+        // Security, a DELETE can otherwise return no error while deleting zero
+        // rows; removing the row from the screen in that case makes it reappear
+        // after a refresh.
+        const { data: deletedRows, error } = await supabaseClient
             .from('workflow')
             .delete()
-            .in('id', jobsToDelete);
+            .in('id', jobsToDelete)
+            .select('id');
 
         if (error) {
             setSyncStatus('Delete failed', '#b00020');
@@ -1074,7 +1079,20 @@
             return;
         }
 
-        jobsToDelete.forEach(rowId => delete storedData[rowId]);
+        const deletedIds = new Set((deletedRows || []).map(row => Number(row.id)));
+        const missingIds = jobsToDelete.filter(rowId => !deletedIds.has(Number(rowId)));
+
+        if (missingIds.length > 0) {
+            setSyncStatus('Delete not authorized', '#b00020');
+            console.error('Supabase did not delete the selected job(s). Check the workflow DELETE RLS policy.', {
+                requestedIds: jobsToDelete,
+                deletedIds: [...deletedIds]
+            });
+            alert('The selected job was not deleted from Supabase. Please enable a DELETE policy for the master account in the workflow table. The row has been kept on screen so it will not falsely appear deleted.');
+            return;
+        }
+
+        deletedIds.forEach(rowId => delete storedData[rowId]);
         selectedJobIds.clear();
         setSyncStatus('Deleted', '#0369a1');
         drawTrackingInterface();
