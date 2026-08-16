@@ -844,23 +844,20 @@
     const TOTAL_LINES_LIMIT = 500;
     const ROWS_PER_PAGE = 100;
     const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
+    const WORKFLOW_NEXT_ROW_ID_STORAGE_KEY = 'workflow-next-row-id';
     const THEME_WELCOME_END_DATE = new Date('2026-08-02T23:59:59');
 
     const TEAM_EMAIL_DIRECTORY = {
         "Mayank Bhatia": "mayank@calgarytaxconsulting.com",
         "Sahil Thakur": "sahil@calgarytaxconsulting.com",
-        "Vashi Malik": "vashi@calgarytaxconsulting.com",
         "Vishesh Walia": "vishesh@calgarytaxconsulting.com",
-        "Mukesh Dogra": "mukesh@calgarytaxconsulting.com",
         
     };
 
     const TEAM_LOGIN_DIRECTORY = {
         "mayank@calgarytaxconsulting.com": { staffName: "Mayank Bhatia", role: "master" },
         "sahil@calgarytaxconsulting.com": { staffName: "Sahil Thakur", role: "staff" },
-        "vashi@calgarytaxconsulting.com": { staffName: "Vashi Malik", role: "staff" },
-        "vishesh@calgarytaxconsulting.com": { staffName: "Vishesh Walia", role: "staff" },
-        "mukesh@calgarytaxconsulting.com": { staffName: "Mukesh Dogra", role: "staff" }
+        "vishesh@calgarytaxconsulting.com": { staffName: "Vishesh Walia", role: "staff" }
     };
 
     const EMAILJS_SERVICE_ID = "service_kfiehhp";
@@ -878,6 +875,8 @@
     let currentUserProfile = null;
     let currentPage = 1;
     const selectedJobIds = new Set();
+    let nextRowId = Number.parseInt(localStorage.getItem(WORKFLOW_NEXT_ROW_ID_STORAGE_KEY), 10);
+    if (!Number.isInteger(nextRowId) || nextRowId < 0) nextRowId = 0;
     const allocationEmailLocks = new Set();
     const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
     const SESSION_STARTED_AT_STORAGE_KEY = 'ctcSessionStartedAt';
@@ -1401,9 +1400,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                                 <option value="" ${rowData.allocTo === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Mayank Bhatia" ${rowData.allocTo === 'Mayank Bhatia' ? 'selected' : ''}>Mayank Bhatia</option>
                                 <option value="Sahil Thakur" ${rowData.allocTo === 'Sahil Thakur' ? 'selected' : ''}>Sahil Thakur</option>
-                                <option value="Vashi Malik" ${rowData.allocTo === 'Vashi Malik' ? 'selected' : ''}>Vashi Malik</option>
                                 <option value="Vishesh Walia" ${rowData.allocTo === 'Vishesh Walia' ? 'selected' : ''}>Vishesh Walia</option>
-                                <option value="Mukesh Dogra" ${rowData.allocTo === 'Mukesh Dogra' ? 'selected' : ''}>Mukesh Dogra</option>
                             </select>
                         </td>
                         <td>
@@ -1543,8 +1540,20 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
     }
 
     function getNextAvailableRowId() {
-        for (let id = 0; id < TOTAL_LINES_LIMIT; id++) {
-            if (!storedData[id]) return id;
+        // Never reuse a deleted row ID. This prevents a newly added job from
+        // appearing in the same slot as a row the user has just deleted.
+        const savedIds = Object.keys(storedData)
+            .map(Number)
+            .filter(Number.isInteger);
+        const firstUnusedId = savedIds.length ? Math.max(...savedIds) + 1 : 0;
+        nextRowId = Math.max(nextRowId, firstUnusedId);
+
+        for (let id = nextRowId; id < TOTAL_LINES_LIMIT; id++) {
+            if (!storedData[id]) {
+                nextRowId = id + 1;
+                localStorage.setItem(WORKFLOW_NEXT_ROW_ID_STORAGE_KEY, String(nextRowId));
+                return id;
+            }
         }
         return null;
     }
@@ -1709,6 +1718,10 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         if (data) {
             storedData = {};
             data.forEach(row => { storedData[row.id] = row; });
+            const savedIds = data.map(row => Number(row.id)).filter(Number.isInteger);
+            const firstUnusedId = savedIds.length ? Math.max(...savedIds) + 1 : 0;
+            nextRowId = Math.max(nextRowId, firstUnusedId);
+            localStorage.setItem(WORKFLOW_NEXT_ROW_ID_STORAGE_KEY, String(nextRowId));
         }
         drawTrackingInterface();
         auditOverdueMilestones();
