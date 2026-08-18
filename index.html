@@ -1311,7 +1311,8 @@
         } else {
             pageIndexList.forEach((index, visibleOffset) => {
                 const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
-const isFinished = isFinalWorkflowRow(rowData);
+// Rendering safeguard: GST "Filed" must never finalize a workflow row.
+const isFinished = (rowData.status || '').toString().trim().toLowerCase() === 'completed';
 const isReadOnly = !canEditRow(rowData);
 const readOnlyAttribute = isReadOnly ? 'disabled aria-readonly="true"' : '';
 const historicalOwnerLabel = isReadOnly ? getHistoricalWorkers(rowData).join(', ') : '';
