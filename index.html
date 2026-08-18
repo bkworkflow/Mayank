@@ -1217,8 +1217,7 @@
 
     function isFinalWorkflowRow(rowData) {
         const status = ((rowData && rowData.status) || '').toString().trim().toLowerCase();
-        return isCompletedStatus(status) || status === 'filed' ||
-            ((rowData && rowData.gstStatus) || '').toString().trim().toLowerCase() === 'filed';
+        return isCompletedStatus(status);
     }
 
     function updateWorkflowSummary() {
