@@ -1212,7 +1212,9 @@
 
     function isCompletedStatus(statusValue) {
         const normalizedStatus = (statusValue || '').toString().trim().toLowerCase();
-        return normalizedStatus === 'signed' || normalizedStatus === 'completed';
+        // Only the explicit workflow status "Completed" finalizes a row.
+        // GST "Filed" and every other status stay editable and keep their position.
+        return normalizedStatus === 'completed';
     }
 
     function isFinalWorkflowRow(rowData) {
