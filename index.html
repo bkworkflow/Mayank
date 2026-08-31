@@ -611,37 +611,18 @@
         .theme-welcome-actions .primary { border:1px solid #6d28d9; color:#fff; background:#7132c8; } .theme-welcome-actions .secondary { border:1px solid #7c4ad1; color:#35215b; background:#fff; }
         @media (max-width:700px) { .theme-welcome-main { grid-template-columns:1fr; padding:32px 26px; } .theme-preview { display:none; } .theme-welcome-copy h2 { font-size:32px; } }
 
-        .calendar-open-button {
+        .calendar-pagination-button {
             border: 1px solid #cbd9ff;
             border-radius: 7px;
-            padding: 8px 12px;
-            color: #3155df;
-            background: #f8faff;
+            padding: 9px 15px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #3155df, #1d4ed8);
             font-size: 12px;
             font-weight: 750;
             cursor: pointer;
+            white-space: nowrap;
         }
-        .calendar-open-button:hover { background: #eef3ff; }
-        .calendar-floating-button {
-            position: fixed;
-            right: 24px;
-            bottom: 54px;
-            z-index: 20;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: 0;
-            border-radius: 999px;
-            padding: 12px 17px;
-            color: #ffffff;
-            background: linear-gradient(135deg, #3155df, #1d4ed8);
-            box-shadow: 0 8px 22px rgba(37, 99, 235, .3);
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-        .calendar-floating-button:hover { transform: translateY(-1px); box-shadow: 0 11px 25px rgba(37, 99, 235, .36); }
-        @media (max-width:520px) { .calendar-floating-button { right: 14px; bottom: 48px; padding: 10px 13px; } }
+        .calendar-pagination-button:hover { filter: brightness(1.06); }
         .holiday-calendar-dialog {
             width: min(960px, calc(100vw - 32px));
             max-height: min(760px, calc(100vh - 32px));
@@ -768,6 +749,7 @@
                 <button type="button" onclick="applyQuickFilter('pending')">Pending</button>
                 <button type="button" onclick="applyQuickFilter('completed')">Completed</button>
             </div>
+            <button type="button" class="calendar-pagination-button" onclick="openHolidayCalendar()" aria-label="Open Holiday Calendar">&#128197; Calendar</button>
             <span class="pagination-status" id="pagination-status">Rows 1-100 of 1000</span>
         </div>
     </div>
@@ -896,9 +878,6 @@
     </div>
 </div>
 
-<!-- Available to every signed-in account: master and regular staff. -->
-<button type="button" class="calendar-floating-button" onclick="openHolidayCalendar()" aria-label="Open Holiday Calendar">&#128197; Calendar</button>
-
 <dialog id="holiday-calendar-dialog" class="holiday-calendar-dialog" aria-labelledby="holiday-calendar-title">
     <div class="holiday-calendar-header">
         <div>
@@ -959,7 +938,7 @@
     function closeHolidayCalendar() {
         document.getElementById('holiday-calendar-dialog').close();
     }
-    const TOTAL_LINES_LIMIT = 500;
+    const TOTAL_LINES_LIMIT = 1000;
     const ROWS_PER_PAGE = 100;
     const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
     const WORKFLOW_NEXT_ROW_ID_STORAGE_KEY = 'workflow-next-row-id';
@@ -1622,7 +1601,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         if (isNewRow) {
             rowIndex = getNextAvailableRowId();
             if (rowIndex === null) {
-                alert('All 500 job rows are currently in use.');
+                alert('All 1000 job rows are currently in use.');
                 drawTrackingInterface();
                 return;
             }
