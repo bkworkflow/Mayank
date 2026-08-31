@@ -437,7 +437,8 @@
 
         body.auth-locked .navbar,
         body.auth-locked .workspace-container,
-        body.auth-locked .footer-ticker {
+        body.auth-locked .footer-ticker,
+        body.auth-locked .calendar-floating-button {
             display: none;
         }
 
@@ -621,6 +622,26 @@
             cursor: pointer;
         }
         .calendar-open-button:hover { background: #eef3ff; }
+        .calendar-floating-button {
+            position: fixed;
+            right: 24px;
+            bottom: 54px;
+            z-index: 20;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 17px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #3155df, #1d4ed8);
+            box-shadow: 0 8px 22px rgba(37, 99, 235, .3);
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .calendar-floating-button:hover { transform: translateY(-1px); box-shadow: 0 11px 25px rgba(37, 99, 235, .36); }
+        @media (max-width:520px) { .calendar-floating-button { right: 14px; bottom: 48px; padding: 10px 13px; } }
         .holiday-calendar-dialog {
             width: min(960px, calc(100vw - 32px));
             max-height: min(760px, calc(100vh - 32px));
@@ -702,7 +723,6 @@
             <button type="button" onclick="handleLogout()">Logout</button>
         </div>
         <div id="save-status" style="font-size: 12px; font-weight: 600; color: #555555; min-width: 120px; text-align: right;">Ready</div>
-        <button type="button" class="calendar-open-button" onclick="openHolidayCalendar()">Calendar</button>
         <div id="live-clock" style="font-size: 24px; font-weight: bold; color: #0369a1;"></div>
     </div>
 
@@ -875,6 +895,9 @@
         </table>
     </div>
 </div>
+
+<!-- Available to every signed-in account: master and regular staff. -->
+<button type="button" class="calendar-floating-button" onclick="openHolidayCalendar()" aria-label="Open Holiday Calendar">&#128197; Calendar</button>
 
 <dialog id="holiday-calendar-dialog" class="holiday-calendar-dialog" aria-labelledby="holiday-calendar-title">
     <div class="holiday-calendar-header">
