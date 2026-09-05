@@ -544,16 +544,6 @@
             font-size: 12px;
         }
 
-        .team-status-panel { position:fixed; right:22px; bottom:48px; z-index:8; width:245px; overflow:hidden; border:1px solid #e2eafa; border-radius:10px; background:#ffffff; box-shadow:0 10px 28px rgba(37,99,235,.16); }
-        .team-status-panel[hidden] { display:none; }
-        .team-status-header { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; color:#ffffff; background:linear-gradient(135deg,#3155df,#1d4ed8); }
-        .team-status-header h2 { margin:0; font-size:14px; } .team-status-live { font-size:10px; font-weight:750; }
-        .team-status-list { padding:3px 14px; } .team-status-person { display:flex; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid #edf2fa; }
-        .team-status-person:last-child { border-bottom:0; } .team-status-dot { width:9px; height:9px; border-radius:50%; flex:0 0 auto; background:#94a3b8; }
-        .team-status-dot.available { background:#22c55e; } .team-status-dot.idle { background:#f59e0b; } .team-status-dot.offline { background:#94a3b8; }
-        .team-status-name { flex:1; color:#1f3655; font-size:12px; font-weight:700; } .team-status-label { color:#64748b; font-size:10px; white-space:nowrap; }
-        @media (max-width:700px) { .team-status-panel { right:12px; bottom:42px; width:min(245px,calc(100vw - 24px)); } }
-
         @media (max-width: 900px) {
             .navbar {
                 align-items: flex-start;
@@ -750,10 +740,6 @@
     </div>
 </div>
 
-<aside class="team-status-panel" id="team-status-panel" hidden aria-label="Team activity status">
-    <div class="team-status-header"><h2>Team Status</h2><span class="team-status-live">● LIVE</span></div>
-    <div class="team-status-list" id="team-status-list"></div>
-</aside>
 <div class="workspace-container">
     <div class="workflow-summary" aria-label="Workflow summary">
         <div class="summary-pill">
@@ -1029,15 +1015,7 @@
     const SATURDAY_LOGOUT_STORAGE_KEY = 'ctcSaturdayLogoutDateIST';
     const SESSION_STARTED_AT_STORAGE_KEY = 'ctcSessionStartedAt';
     const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
-    const PRESENCE_HEARTBEAT_INTERVAL_MS = 15000;
-    const PRESENCE_IDLE_AFTER_MS = 60 * 1000;
-    const PRESENCE_OFFLINE_AFTER_MS = 5 * 60 * 1000;
     let sessionExpirationTimer = null;
-    let presenceHeartbeatTimer = null;
-    let masterPresenceRefreshTimer = null;
-    let lastPresenceUpdateAt = 0;
-    let pendingPresenceActivity = false;
-    let presenceListenersAttached = false;
 
     function normalizeEmail(email) {
         return (email || '').toString().trim().toLowerCase();
@@ -1085,81 +1063,6 @@
 
     function isMasterUser() {
         return currentUserProfile && (currentUserProfile.role === 'master' || currentUserProfile.email === MASTER_LOGIN_EMAIL);
-    }
-
-    function getPresenceStatus(person) {
-        const lastSeenTime = new Date(person && person.last_seen || 0).getTime();
-        const lastActiveTime = new Date(person && person.last_active || 0).getTime();
-        if (!Number.isFinite(lastSeenTime) || Date.now() - lastSeenTime >= PRESENCE_OFFLINE_AFTER_MS) return { className: 'offline', label: 'Offline' };
-        if (!Number.isFinite(lastActiveTime) || Date.now() - lastActiveTime >= PRESENCE_IDLE_AFTER_MS) return { className: 'idle', label: 'Idle' };
-        return { className: 'available', label: 'Available' };
-    }
-
-    async function updateMyPresence(force = false, activity = false) {
-        if (!currentUserProfile) return;
-        if (!force && Date.now() - lastPresenceUpdateAt < PRESENCE_HEARTBEAT_INTERVAL_MS) return;
-        lastPresenceUpdateAt = Date.now();
-        const now = new Date().toISOString();
-        const presenceRecord = {
-            email: currentUserProfile.email,
-            staff_name: currentUserProfile.staffName,
-            last_seen: now
-        };
-        if (activity || pendingPresenceActivity || !lastPresenceUpdateAt) presenceRecord.last_active = now;
-        const { error } = await supabaseClient.from('team_presence').upsert(presenceRecord, { onConflict: 'email' });
-        if (!error) pendingPresenceActivity = false;
-        if (error) console.warn('Team presence update unavailable. Confirm the team_presence table and RLS policies are set up.', error.message);
-    }
-
-    async function refreshMasterTeamStatus() {
-        if (!isMasterUser()) return;
-        const panel = document.getElementById('team-status-panel');
-        const list = document.getElementById('team-status-list');
-        if (!panel || !list) return;
-        const { data, error } = await supabaseClient.from('team_presence').select('email, staff_name, last_seen, last_active');
-        if (error) {
-            console.warn('Team status unavailable. Confirm the team_presence table and RLS policies are set up.', error.message);
-            return;
-        }
-        const presenceByEmail = new Map((data || []).map(person => [normalizeEmail(person.email), person]));
-        list.innerHTML = Object.entries(TEAM_LOGIN_DIRECTORY)
-            .filter(([email]) => email !== MASTER_LOGIN_EMAIL)
-            .map(([email, profile]) => {
-                const person = presenceByEmail.get(email);
-                const status = getPresenceStatus(person);
-                return `<div class="team-status-person"><i class="team-status-dot ${status.className}" aria-hidden="true"></i><span class="team-status-name">${profile.staffName}</span><span class="team-status-label">${status.label}</span></div>`;
-            }).join('');
-        panel.hidden = false;
-    }
-
-    function startPresenceTracking() {
-        if (presenceHeartbeatTimer) clearInterval(presenceHeartbeatTimer);
-        if (masterPresenceRefreshTimer) clearInterval(masterPresenceRefreshTimer);
-        updateMyPresence(true, true);
-        presenceHeartbeatTimer = setInterval(() => updateMyPresence(true), PRESENCE_HEARTBEAT_INTERVAL_MS);
-        if (isMasterUser()) {
-            refreshMasterTeamStatus();
-            masterPresenceRefreshTimer = setInterval(refreshMasterTeamStatus, PRESENCE_HEARTBEAT_INTERVAL_MS);
-        }
-        if (!presenceListenersAttached) {
-            const recordActivity = () => { pendingPresenceActivity = true; updateMyPresence(); };
-            ['mousemove', 'mousedown', 'scroll', 'keydown', 'touchstart'].forEach(eventName => {
-                document.addEventListener(eventName, recordActivity, { passive: true });
-            });
-            window.addEventListener('focus', recordActivity);
-            presenceListenersAttached = true;
-        }
-    }
-
-    function stopPresenceTracking() {
-        if (presenceHeartbeatTimer) clearInterval(presenceHeartbeatTimer);
-        if (masterPresenceRefreshTimer) clearInterval(masterPresenceRefreshTimer);
-        presenceHeartbeatTimer = null;
-        masterPresenceRefreshTimer = null;
-        lastPresenceUpdateAt = 0;
-        pendingPresenceActivity = false;
-        const panel = document.getElementById('team-status-panel');
-        if (panel) panel.hidden = true;
     }
 
     function canViewRow(rowData) {
@@ -1385,7 +1288,6 @@
         }
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
-        startPresenceTracking();
         showThemeWelcome();
         showBirthdayReminder();
         scheduleSessionExpiration();
@@ -1395,7 +1297,6 @@
     function showLoggedOutState(message = '') {
         if (sessionExpirationTimer) clearTimeout(sessionExpirationTimer);
         sessionExpirationTimer = null;
-        stopPresenceTracking();
         currentUserProfile = null;
         storedData = {};
         document.body.classList.add('auth-locked');
