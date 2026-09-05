@@ -611,6 +611,17 @@
         .theme-welcome-actions .primary { border:1px solid #6d28d9; color:#fff; background:#7132c8; } .theme-welcome-actions .secondary { border:1px solid #7c4ad1; color:#35215b; background:#fff; }
         @media (max-width:700px) { .theme-welcome-main { grid-template-columns:1fr; padding:32px 26px; } .theme-preview { display:none; } .theme-welcome-copy h2 { font-size:32px; } }
 
+        .birthday-modal[hidden] { display:none; }
+        .birthday-modal { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:24px; background:rgba(16,35,65,.46); backdrop-filter:blur(4px); }
+        .birthday-card { width:min(500px,100%); overflow:hidden; border-radius:18px; background:#fff; box-shadow:0 28px 80px rgba(22,40,75,.3); }
+        .birthday-card-header { padding:28px 30px; color:#fff; background:linear-gradient(135deg,#7c3aed,#ec4899); text-align:center; }
+        .birthday-card-header .birthday-icon { font-size:38px; line-height:1; }
+        .birthday-card-header h2 { margin:10px 0 0; font-size:26px; }
+        .birthday-card-body { padding:24px 30px 18px; color:#425673; text-align:center; font-size:15px; line-height:1.5; }
+        .birthday-person { margin:14px 0 0; color:#7c3aed; font-size:22px; font-weight:800; }
+        .birthday-card-actions { padding:16px 30px 24px; text-align:center; }
+        .birthday-card-actions button { border:0; border-radius:7px; padding:11px 22px; color:#fff; background:#7c3aed; font-weight:750; cursor:pointer; }
+
         .calendar-pagination-button {
             border: 1px solid #cbd9ff;
             border-radius: 7px;
@@ -689,6 +700,19 @@
             <button class="primary" type="button" onclick="closeThemeWelcome()">Explore Now</button>
             <button class="secondary" type="button" onclick="closeThemeWelcome()">Got it</button>
         </div>
+    </div>
+</div>
+
+<div class="birthday-modal" id="birthday-modal" hidden role="dialog" aria-modal="true" aria-labelledby="birthday-modal-title">
+    <div class="birthday-card">
+        <div class="birthday-card-header">
+            <div class="birthday-icon">🎉</div>
+            <h2 id="birthday-modal-title">Happy Birthday!</h2>
+        </div>
+        <div class="birthday-card-body">
+            <div id="birthday-message"></div>
+        </div>
+        <div class="birthday-card-actions"><button type="button" onclick="closeBirthdayModal()">Wish them well!</button></div>
     </div>
 </div>
 
@@ -945,18 +969,28 @@
     const MASTER_LOGIN_EMAIL = "mayank@calgarytaxconsulting.com";
     const WORKFLOW_NEXT_ROW_ID_STORAGE_KEY = 'workflow-next-row-id';
     const THEME_WELCOME_END_DATE = new Date('2026-08-02T23:59:59');
+    const TEAM_BIRTHDAYS = [
+        { name: 'Sahil Thakur', month: 2, day: 12 },
+        { name: 'Omkar Pal', month: 9, day: 17 },
+        { name: 'Narinder Singh', month: 5, day: 17 },
+        { name: 'Mayank Bhatia', month: 9, day: 25 }
+    ];
 
     const TEAM_EMAIL_DIRECTORY = {
         "Mayank Bhatia": "mayank@calgarytaxconsulting.com",
         "Sahil Thakur": "sahil@calgarytaxconsulting.com",
         "Vishesh Walia": "vishesh@calgarytaxconsulting.com",
+        "Mukesh Dogra": "mukesh@calgarytaxconsulting.com",
+        "Omkar Pal": "omkar@calgarytaxconsulting.com",
         
     };
 
     const TEAM_LOGIN_DIRECTORY = {
         "mayank@calgarytaxconsulting.com": { staffName: "Mayank Bhatia", role: "master" },
         "sahil@calgarytaxconsulting.com": { staffName: "Sahil Thakur", role: "staff" },
-        "vishesh@calgarytaxconsulting.com": { staffName: "Vishesh Walia", role: "staff" }
+        "vishesh@calgarytaxconsulting.com": { staffName: "Vishesh Walia", role: "staff" },
+        "mukesh@calgarytaxconsulting.com": { staffName: "Mukesh Dogra", role: "staff" },
+        "omkar@calgarytaxconsulting.com": { staffName: "Omkar Pal", role: "staff" }
     };
 
     const EMAILJS_SERVICE_ID = "service_kfiehhp";
@@ -1206,6 +1240,30 @@
         if (modal) modal.hidden = true;
     }
 
+    function showBirthdayReminder() {
+        const modal = document.getElementById('birthday-modal');
+        const message = document.getElementById('birthday-message');
+        if (!modal || !message) return;
+
+        const today = new Date();
+        const birthdayPeople = TEAM_BIRTHDAYS.filter(person =>
+            person.month === today.getMonth() + 1 && person.day === today.getDate()
+        );
+        if (!birthdayPeople.length) return;
+
+        const names = birthdayPeople.map(person => person.name).join(' and ');
+        const birthdayTitle = birthdayPeople.length === 1
+            ? `Today is ${names}'s Birthday`
+            : `Today is ${names}' Birthday`;
+        message.innerHTML = `<div class="birthday-person">${birthdayTitle}</div><div>Please wish ${birthdayPeople.length === 1 ? 'them' : 'them all'} a wonderful birthday!</div>`;
+        modal.hidden = false;
+    }
+
+    function closeBirthdayModal() {
+        const modal = document.getElementById('birthday-modal');
+        if (modal) modal.hidden = true;
+    }
+
     function changePage(direction) {
         currentPage += direction;
         if (currentPage < 1) currentPage = 1;
@@ -1230,6 +1288,7 @@
         document.body.classList.remove('auth-locked');
         await loadDataFromServer();
         showThemeWelcome();
+        showBirthdayReminder();
         scheduleSessionExpiration();
         await enforceSaturdayLogout();
     }
@@ -1502,6 +1561,8 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                                 <option value="Mayank Bhatia" ${rowData.allocTo === 'Mayank Bhatia' ? 'selected' : ''}>Mayank Bhatia</option>
                                 <option value="Sahil Thakur" ${rowData.allocTo === 'Sahil Thakur' ? 'selected' : ''}>Sahil Thakur</option>
                                 <option value="Vishesh Walia" ${rowData.allocTo === 'Vishesh Walia' ? 'selected' : ''}>Vishesh Walia</option>
+                                <option value="Mukesh Dogra" ${rowData.allocTo === 'Mukesh Dogra' ? 'selected' : ''}>Mukesh Dogra</option>
+                                <option value="Omkar Pal" ${rowData.allocTo === 'Omkar Pal' ? 'selected' : ''}>Omkar Pal</option>
                             </select>
                         </td>
                         <td>
