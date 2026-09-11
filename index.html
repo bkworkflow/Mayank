@@ -851,6 +851,15 @@
                     </th>
                     <th>
                         <div class="th-content">
+                            <div class="th-label-row" onclick="sortByField('bookkeeper')">
+                                <span>Bookkeeper</span>
+                                <span class="sort-trigger" id="sort-bookkeeper">&#9650;&#9660;</span>
+                            </div>
+                            <input type="text" class="header-filter-input" placeholder="Filter..." oninput="handleFilterChange('bookkeeper', this.value)">
+                        </div>
+                    </th>
+                    <th>
+                        <div class="th-content">
                             <div class="th-label-row" onclick="sortByField('CRA Auth.')">
                                 <span>CRA Auth.</span>
                                 <span class="sort-trigger" id="sort-craAuth">&#9650;&#9660;</span>
@@ -1004,7 +1013,7 @@
     }
 
     let storedData = {};
-    let activeFilters = { client: '', jobId: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '' };
+    let activeFilters = { client: '', jobId: '', type: '', allocDate: '', expDate: '', bookkeeper: '', allocTo: '', status: '', priority: '' };
     let activeSort = { field: null, direction: 'asc' };
     let currentUserProfile = null;
     let currentPage = 1;
@@ -1415,7 +1424,7 @@
             });
 
         indexList = indexList.filter(index => {
-            const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+            const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', bookkeeper: '', allocTo: '', status: '', priority: '', unlocked: false  };
             return Object.keys(activeFilters).every(field => {
                 const query = activeFilters[field].toLowerCase().trim();
                 if (!query) return true;
@@ -1425,8 +1434,8 @@
         });
 
         indexList.sort((indexA, indexB) => {
-            const rowA = storedData[indexA] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
-            const rowB = storedData[indexB] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+            const rowA = storedData[indexA] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', bookkeeper: '', allocTo: '', status: '', priority: '', unlocked: false  };
+            const rowB = storedData[indexB] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', bookkeeper: '', allocTo: '', status: '', priority: '', unlocked: false  };
             const rowAFinished = isFinalWorkflowRow(rowA);
             const rowBFinished = isFinalWorkflowRow(rowB);
 
@@ -1466,10 +1475,10 @@
         const lastRowNumber = totalRows === 0 ? 0 : pageStartIndex + pageIndexList.length;
 
         if (pageIndexList.length === 0) {
-            htmlBuffer = `<tr><td colspan="12" style="text-align: center; padding: 20px; color: #777777;">No rows match your login or active filters.</td></tr>`;
+            htmlBuffer = `<tr><td colspan="13" style="text-align: center; padding: 20px; color: #777777;">No rows match your login or active filters.</td></tr>`;
         } else {
             pageIndexList.forEach((index, visibleOffset) => {
-                const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false  };
+                const rowData = storedData[index] || { client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', bookkeeper: '', allocTo: '', status: '', priority: '', unlocked: false  };
 // Rendering safeguard: GST "Filed" must never finalize a workflow row.
 const isFinished = (rowData.status || '').toString().trim().toLowerCase() === 'completed';
 const isReadOnly = !canEditRow(rowData);
@@ -1540,6 +1549,15 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                         </td>
                         <td><input type="date" class="data-input" data-field="allocDate" value="${escapeInputText(rowData.allocDate)}" ${readOnlyAttribute}></td>
                         <td><input type="date" class="data-input" data-field="expDate" value="${escapeInputText(rowData.expDate)}" ${readOnlyAttribute}></td>
+                        <td>
+                            <select class="data-input" data-field="bookkeeper" ${readOnlyAttribute}>
+                                <option value="" ${rowData.bookkeeper === '' ? 'selected' : ''}>Select...</option>
+                                <option value="Vishesh Walia" ${rowData.bookkeeper === 'Vishesh Walia' ? 'selected' : ''}>Vishesh Walia</option>
+                                <option value="Sahil Thakur" ${rowData.bookkeeper === 'Sahil Thakur' ? 'selected' : ''}>Sahil Thakur</option>
+                                <option value="Mukesh Dogra" ${rowData.bookkeeper === 'Mukesh Dogra' ? 'selected' : ''}>Mukesh Dogra</option>
+                                <option value="Omkar Pal" ${rowData.bookkeeper === 'Omkar Pal' ? 'selected' : ''}>Omkar Pal</option>
+                            </select>
+                        </td>
                         <td>
                             <select class="data-input" data-field="craAuth" ${readOnlyAttribute}>
                                 <option value="" ${rowData.craAuth === '' ? 'selected' : ''}>Select...</option>
@@ -1621,7 +1639,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
     }
 
     function sortByField(field) {
-        ['client','jobId','yearEnd','type','allocDate','expDate','craAuth','gstStatus','allocTo','status','priority'].forEach(f => {
+        ['client','jobId','yearEnd','type','allocDate','expDate','bookkeeper','craAuth','gstStatus','allocTo','status','priority'].forEach(f => {
             const el = document.getElementById(`sort-${f}`);
             if(el) el.innerHTML = '&#9650;&#9660;';
         });
@@ -1675,7 +1693,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         const historicalAllocTo = storedData[rowIndex] ? storedData[rowIndex].allocTo : '';
         if (!storedData[rowIndex]) {
             storedData[rowIndex] = {
-                client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', allocTo: '', status: '', priority: '', unlocked: false
+                client: '', jobId: '', yearEnd: '', yearEndYear: '', type: '', allocDate: '', expDate: '', bookkeeper: '', allocTo: '', status: '', priority: '', unlocked: false
             };
         }
 
@@ -1826,7 +1844,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         }
         const numericRowId = Number(rowIndex);
         const allowedFields = [
-            'client', 'jobId', 'yearEnd', 'yearEndYear', 'type', 'allocDate', 'expDate',
+            'client', 'jobId', 'yearEnd', 'yearEndYear', 'type', 'allocDate', 'expDate', 'bookkeeper',
             'craAuth', 'gstStatus', 'allocTo', 'status', 'priority', 'lastOverdueNotificationDate'
         ];
         const cleanRowData = { id: numericRowId };
