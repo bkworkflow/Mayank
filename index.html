@@ -918,7 +918,7 @@
     <div class="holiday-calendar-header">
         <div>
             <h2 id="holiday-calendar-title">Holiday Calendar</h2>
-            <p>2026 statutory and office holidays</p>
+            <p>2026–2027 statutory and office holidays</p>
         </div>
         <button type="button" class="calendar-close-button" onclick="closeHolidayCalendar()">Close</button>
     </div>
@@ -931,16 +931,17 @@
 <script>
 
     const tableBodyElement = document.getElementById('trackingTableBody');
-    const HOLIDAYS_2026 = {
-        '2026-01-01': 'New Year Day',
-        '2026-02-16': 'Family Day',
-        '2026-04-03': 'Good Friday',
-        '2026-05-18': 'Victoria Day',
-        '2026-07-01': 'Canada Day',
-        '2026-10-12': 'Thanksgiving Day',
-        '2026-11-05': 'Diwali',
-        '2026-11-06': 'Diwali',
-        '2026-12-25': 'Christmas Day'
+    const HOLIDAYS_BY_YEAR = {
+        2026: {
+            '2026-01-01': 'New Year Day', '2026-02-16': 'Family Day', '2026-04-03': 'Good Friday',
+            '2026-05-18': 'Victoria Day', '2026-07-01': 'Canada Day', '2026-10-12': 'Thanksgiving Day',
+            '2026-11-05': 'Diwali', '2026-11-06': 'Diwali', '2026-12-25': 'Christmas Day'
+        },
+        2027: {
+            '2027-01-01': 'New Year Day', '2027-02-15': 'Family Day', '2027-03-26': 'Good Friday',
+            '2027-05-24': 'Victoria Day', '2027-07-01': 'Canada Day', '2027-09-06': 'Labour Day',
+            '2027-10-11': 'Thanksgiving Day', '2027-11-11': 'Remembrance Day', '2027-12-25': 'Christmas Day'
+        }
     };
     const calendarMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const calendarDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -949,19 +950,21 @@
         const calendarMonths = document.getElementById('calendar-months');
         if (!calendarMonths || calendarMonths.dataset.ready) return;
         let html = '';
-        for (let month = 0; month < 12; month++) {
-            const firstDay = new Date(2026, month, 1).getDay();
-            const daysInMonth = new Date(2026, month + 1, 0).getDate();
-            html += `<section class="calendar-month"><h3>${calendarMonthNames[month]} 2026</h3><div class="calendar-grid">`;
-            html += calendarDayNames.map(day => `<div class="calendar-day-name">${day}</div>`).join('');
-            html += '<div></div>'.repeat(firstDay);
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateKey = `2026-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const holidayName = HOLIDAYS_2026[dateKey];
-                html += `<div class="calendar-day${holidayName ? ' is-holiday' : ''}"${holidayName ? ` data-holiday="${holidayName}" title="${holidayName}" aria-label="${holidayName}, ${calendarMonthNames[month]} ${day}, 2026"` : ''}>${day}</div>`;
+        [2026, 2027].forEach(year => {
+            for (let month = 0; month < 12; month++) {
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                html += `<section class="calendar-month"><h3>${calendarMonthNames[month]} ${year}</h3><div class="calendar-grid">`;
+                html += calendarDayNames.map(day => `<div class="calendar-day-name">${day}</div>`).join('');
+                html += '<div></div>'.repeat(firstDay);
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const holidayName = (HOLIDAYS_BY_YEAR[year] || {})[dateKey];
+                    html += `<div class="calendar-day${holidayName ? ' is-holiday' : ''}"${holidayName ? ` data-holiday="${holidayName}" title="${holidayName}" aria-label="${holidayName}, ${calendarMonthNames[month]} ${day}, ${year}"` : ''}>${day}</div>`;
+                }
+                html += '</div></section>';
             }
-            html += '</div></section>';
-        }
+        });
         calendarMonths.innerHTML = html;
         calendarMonths.dataset.ready = 'true';
     }
@@ -981,6 +984,7 @@
     const THEME_WELCOME_END_DATE = new Date('2026-08-02T23:59:59');
     const TEAM_BIRTHDAYS = [
         { name: 'Sahil Thakur', month: 2, day: 12 },
+        { name: 'Vishesh Walia', month: 12, day: 23 },
         { name: 'Omkar Pal', month: 9, day: 17 },
         { name: 'Narinder Singh', month: 5, day: 17 },
         { name: 'Mayank Bhatia', month: 9, day: 25 }
@@ -1025,6 +1029,7 @@
     const SESSION_STARTED_AT_STORAGE_KEY = 'ctcSessionStartedAt';
     const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
     let sessionExpirationTimer = null;
+    let birthdayMidnightTimer = null;
 
     function normalizeEmail(email) {
         return (email || '').toString().trim().toLowerCase();
@@ -1255,9 +1260,11 @@
         const message = document.getElementById('birthday-message');
         if (!modal || !message) return;
 
-        const today = new Date();
+        const indiaToday = getIndiaDateParts();
+        const indiaMonth = Number(indiaToday.month);
+        const indiaDay = Number(indiaToday.day);
         const birthdayPeople = TEAM_BIRTHDAYS.filter(person =>
-            person.month === today.getMonth() + 1 && person.day === today.getDate()
+            person.month === indiaMonth && person.day === indiaDay
         );
         if (!birthdayPeople.length) return;
 
@@ -1267,6 +1274,21 @@
             : `Today is ${names}' Birthday`;
         message.innerHTML = `<div class="birthday-person">${birthdayTitle}</div><div>Please wish ${birthdayPeople.length === 1 ? 'them' : 'them all'} a wonderful birthday!</div>`;
         modal.hidden = false;
+    }
+
+    function scheduleIndiaMidnightBirthdayCheck() {
+        if (birthdayMidnightTimer) clearTimeout(birthdayMidnightTimer);
+        if (!currentUserProfile) return;
+
+        const indiaNow = getIndiaDateParts();
+        const nextMidnightUtc = Date.UTC(
+            Number(indiaNow.year), Number(indiaNow.month) - 1, Number(indiaNow.day) + 1
+        ) - (5 * 60 + 30) * 60 * 1000;
+        const delay = Math.max(0, nextMidnightUtc - Date.now());
+        birthdayMidnightTimer = setTimeout(() => {
+            showBirthdayReminder();
+            scheduleIndiaMidnightBirthdayCheck();
+        }, delay);
     }
 
     function closeBirthdayModal() {
@@ -1299,6 +1321,7 @@
         await loadDataFromServer();
         showThemeWelcome();
         showBirthdayReminder();
+        scheduleIndiaMidnightBirthdayCheck();
         scheduleSessionExpiration();
         await enforceSaturdayLogout();
     }
@@ -1306,6 +1329,8 @@
     function showLoggedOutState(message = '') {
         if (sessionExpirationTimer) clearTimeout(sessionExpirationTimer);
         sessionExpirationTimer = null;
+        if (birthdayMidnightTimer) clearTimeout(birthdayMidnightTimer);
+        birthdayMidnightTimer = null;
         currentUserProfile = null;
         storedData = {};
         document.body.classList.add('auth-locked');
@@ -1528,6 +1553,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                                 <option value="2024" ${rowData.yearEndYear === '2024' ? 'selected' : ''}>2024</option>
                                 <option value="2025" ${rowData.yearEndYear === '2025' ? 'selected' : ''}>2025</option>
                                 <option value="2026" ${rowData.yearEndYear === '2026' ? 'selected' : ''}>2026</option>
+                                <option value="2027" ${rowData.yearEndYear === '2027' ? 'selected' : ''}>2027</option>
                             </select>
                             </div>
                        </td>
@@ -1550,7 +1576,7 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
                         <td><input type="date" class="data-input" data-field="allocDate" value="${escapeInputText(rowData.allocDate)}" ${readOnlyAttribute}></td>
                         <td><input type="date" class="data-input" data-field="expDate" value="${escapeInputText(rowData.expDate)}" ${readOnlyAttribute}></td>
                         <td>
-                            <select class="data-input" data-field="bookkeeper" ${readOnlyAttribute}>
+                            <select class="data-input" data-field="bookkeeper" ${readOnlyAttribute} ${!isMasterUser() ? 'disabled aria-readonly="true" title="Only the Mayank master login can change the Bookkeeper field."' : ''}>
                                 <option value="" ${rowData.bookkeeper === '' ? 'selected' : ''}>Select...</option>
                                 <option value="Vishesh Walia" ${rowData.bookkeeper === 'Vishesh Walia' ? 'selected' : ''}>Vishesh Walia</option>
                                 <option value="Sahil Thakur" ${rowData.bookkeeper === 'Sahil Thakur' ? 'selected' : ''}>Sahil Thakur</option>
@@ -1674,8 +1700,8 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         const visibleRow = isNewRow ? {} : (storedData[rowIndex] || {});
         const rowBeforeEdit = { ...visibleRow };
 
-        if (!canEditRow(visibleRow)) {
-            alert('This file is visible for reference only and is locked for your login.');
+        if (!canEditRow(visibleRow) || (fieldName === 'bookkeeper' && !isMasterUser())) {
+            alert(fieldName === 'bookkeeper' ? 'Only the Mayank master login can change the Bookkeeper field.' : 'This file is visible for reference only and is locked for your login.');
             drawTrackingInterface();
             return;
         }
@@ -1838,8 +1864,14 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
 
     async function saveRowToServer(rowIndex, rowData, authorizationRow = null) {
         if (!currentUserProfile) return false;
-        if (!canEditRow(authorizationRow || storedData[rowIndex] || rowData)) {
+        const originalRow = authorizationRow || storedData[rowIndex] || rowData;
+        if (!canEditRow(originalRow)) {
             console.warn('Blocked attempt to save a read-only historical row.', rowIndex);
+            return false;
+        }
+        if (!isMasterUser() && (rowData.bookkeeper || '') !== (originalRow.bookkeeper || '')) {
+            console.warn('Blocked attempt to change the Bookkeeper field without the Mayank master login.', rowIndex);
+            rowData.bookkeeper = originalRow.bookkeeper || '';
             return false;
         }
         const numericRowId = Number(rowIndex);
