@@ -661,6 +661,64 @@
         .calendar-day.is-holiday:hover::after, .calendar-day.is-holiday:focus::after { opacity:1; }
         @media (max-width:800px) { .calendar-months { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
         @media (max-width:520px) { .calendar-months { grid-template-columns:1fr; } .holiday-calendar-body { padding:14px; } }
+        .team-admin-button { border:0; border-radius:6px; padding:8px 11px; color:#fff; background:#3155df; font-weight:700; cursor:pointer; }
+        .team-admin-dialog { width:min(1180px, calc(100vw - 28px)); max-width:1180px; max-height:calc(100vh - 28px); padding:0; border:1px solid #dce6f4; border-radius:14px; color:#1c2b41; background:#f4f7fb; box-shadow:0 24px 80px rgba(18,37,70,.28); }
+        .team-admin-dialog::backdrop { background:rgba(12,27,51,.55); backdrop-filter:blur(3px); }
+        .team-admin-shell { display:grid; grid-template-columns:205px minmax(0,1fr); min-height:min(720px, calc(100vh - 30px)); }
+        .team-admin-side { padding:22px 13px; border-right:1px solid #e2e9f2; background:#fbfcfe; }
+        .team-admin-brand { display:flex; align-items:center; gap:9px; padding:2px 8px 26px; font-weight:800; }
+        .team-admin-brand-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:9px; color:#fff; background:#3155df; }
+        .team-admin-nav-label { padding:8px 10px 5px; color:#7b8ca6; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+        .team-admin-nav { display:grid; gap:4px; }
+        .team-admin-nav button { border:0; border-radius:7px; padding:10px; color:#62748d; background:transparent; text-align:left; cursor:pointer; font:inherit; font-size:12px; font-weight:600; }
+        .team-admin-nav button.active { color:#3155df; background:#edf3ff; }
+        .team-admin-owner { margin-top:34px; padding:12px 10px; border:1px solid #e2e9f2; border-radius:9px; background:#fff; font-size:12px; font-weight:700; }
+        .team-admin-owner small { display:block; color:#7b8ca6; font-size:10px; font-weight:500; }
+        .team-admin-main { min-width:0; padding:22px 26px; overflow:auto; }
+        .team-admin-top { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-bottom:15px; border-bottom:1px solid #e2e9f2; color:#7b8ca6; font-size:11px; }
+        .team-admin-top button { border:1px solid #e0e7f0; border-radius:6px; padding:6px 9px; color:#52647b; background:#fff; cursor:pointer; }
+        .team-admin-heading { display:flex; justify-content:space-between; align-items:end; gap:12px; margin:21px 0 15px; }
+        .team-admin-heading h2 { margin:0; color:#172b4d; font-size:22px; }
+        .team-admin-heading p { margin:4px 0 0; color:#718096; font-size:12px; }
+        .team-admin-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:15px; }
+        .team-admin-stat { padding:12px 14px; border:1px solid #e2e9f2; border-radius:9px; background:#fff; }
+        .team-admin-stat span { display:block; color:#718096; font-size:11px; }
+        .team-admin-stat b { display:inline-block; margin:3px 7px 0 0; color:#172b4d; font-size:21px; }
+        .team-admin-stat small { color:#718096; font-size:10px; }
+        .team-admin-tabs { display:flex; gap:18px; border-bottom:1px solid #e2e9f2; margin-bottom:13px; }
+        .team-admin-tabs button { padding:9px 1px; border:0; border-bottom:2px solid transparent; color:#718096; background:transparent; cursor:pointer; font-weight:700; }
+        .team-admin-tabs button.active { border-color:#3155df; color:#3155df; }
+        .team-admin-toolbar { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:13px 0; }
+        .team-admin-field { display:grid; gap:5px; min-width:0; }
+        .team-admin-field label { color:#718096; font-size:10px; font-weight:700; }
+        .team-admin-field input, .team-admin-field select, .team-admin-field textarea { min-height:34px; max-width:100%; padding:7px 9px; border:1px solid #dce4ef; border-radius:6px; color:#25364d; background:#fff; font:inherit; font-size:12px; }
+        .team-admin-actions { display:flex; gap:7px; }
+        .team-admin-actions button, .team-admin-submit { min-height:34px; border:1px solid #dce4ef; border-radius:6px; padding:7px 10px; color:#25364d; background:#fff; cursor:pointer; font-size:11px; font-weight:700; }
+        .team-admin-actions button.primary, .team-admin-submit { border-color:#3155df; color:#fff; background:#3155df; }
+        .team-admin-table-wrap { overflow:auto; border:1px solid #e2e9f2; border-radius:8px; background:#fff; }
+        .team-admin-table { width:100%; border-collapse:collapse; min-width:360px; }
+        .team-admin-table th { padding:9px 11px; color:#718096; background:#f8fafd; font-size:10px; text-align:left; }
+        .team-admin-table td { padding:9px 11px; border-top:1px solid #edf0f5; font-size:11px; }
+        .team-admin-person { display:flex; align-items:center; gap:8px; font-weight:700; }
+        .team-admin-avatar { display:grid; place-items:center; width:27px; height:27px; border-radius:50%; color:#3155df; background:#edf3ff; font-size:9px; font-weight:800; }
+        .team-admin-status-select { min-height:31px; padding:5px 8px; border:1px solid #dce4ef; border-radius:6px; color:#25364d; background:#fff; font:inherit; font-size:11px; }
+        .team-admin-message { min-height:18px; margin-top:9px; color:#718096; font-size:10px; }
+        .team-admin-message.success { color:#16845c; font-weight:700; }
+        .team-admin-message.error { color:#b3261e; font-weight:700; }
+        .team-admin-leave-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(240px,.8fr); gap:16px; }
+        .team-admin-records, .team-admin-form { border:1px solid #e2e9f2; border-radius:8px; background:#fff; }
+        .team-admin-record { display:grid; grid-template-columns:1fr auto; gap:8px; padding:11px; border-top:1px solid #edf0f5; font-size:11px; }
+        .team-admin-record:first-child { border-top:0; }
+        .team-admin-record small { display:block; margin-top:3px; color:#718096; font-size:10px; }
+        .team-admin-record-badge { align-self:start; border-radius:5px; padding:4px 7px; color:#16845c; background:#e8f7f0; font-size:10px; font-weight:700; }
+        .team-admin-form { padding:13px; }
+        .team-admin-form h3 { margin:0 0 11px; color:#172b4d; font-size:13px; }
+        .team-admin-form .team-admin-field { margin-bottom:9px; }
+        .team-admin-form textarea { min-height:52px; resize:vertical; }
+        .team-admin-submit { width:100%; }
+        .team-admin-empty { padding:18px 12px; color:#718096; font-size:11px; }
+        @media(max-width:720px) { .team-admin-shell { grid-template-columns:1fr; } .team-admin-side { display:flex; align-items:center; gap:6px; overflow:auto; padding:9px!important; border-right:0; border-bottom:1px solid #e2e9f2; } .team-admin-brand { white-space:nowrap; padding:0 7px!important; } .team-admin-nav-label,.team-admin-owner { display:none; } .team-admin-nav { display:flex; } .team-admin-nav button { white-space:nowrap; } .team-admin-main { padding:16px; } .team-admin-leave-grid { grid-template-columns:1fr; } }
+        @media(max-width:480px) { .team-admin-stats { gap:6px; } .team-admin-stat { padding:9px; } .team-admin-stat b { font-size:18px; } .team-admin-toolbar { align-items:start; flex-direction:column; } .team-admin-actions { width:100%; } .team-admin-actions button { flex:1; } }
 </style>
 </head>
 <body class="auth-locked">
@@ -777,6 +835,7 @@
                 <button type="button" onclick="applyQuickFilter('completed')">Completed</button>
             </div>
             <button type="button" class="calendar-pagination-button" onclick="openHolidayCalendar()" aria-label="Open Holiday Calendar">&#128197; Calendar</button>
+            <button type="button" id="team-admin-open-button" class="team-admin-button" onclick="openTeamAdmin()" hidden>&#128101; Attendance &amp; Holidays</button>
             <span class="pagination-status" id="pagination-status">Rows 1-100 of 1000</span>
         </div>
     </div>
@@ -914,11 +973,63 @@
     </div>
 </div>
 
+<dialog id="team-admin-dialog" class="team-admin-dialog" aria-labelledby="team-admin-title">
+    <div class="team-admin-shell">
+        <aside class="team-admin-side">
+            <div class="team-admin-brand"><span class="team-admin-brand-mark">CT</span> CTC Workflow</div>
+            <div class="team-admin-nav-label">Master workspace</div>
+            <nav class="team-admin-nav" aria-label="Master workspace sections">
+                <button type="button" class="active" data-team-admin-tab="attendance">▦ &nbsp; Attendance</button>
+                <button type="button" data-team-admin-tab="holidays">◷ &nbsp; Holidays &amp; leave</button>
+                <button type="button" data-team-admin-tab="staff">♙ &nbsp; Staff</button>
+            </nav>
+            <div class="team-admin-owner">Mayank Bhatia<small>Master login</small></div>
+        </aside>
+        <main class="team-admin-main">
+            <div class="team-admin-top"><span>CTC Workflow / Master workspace</span><button type="button" onclick="closeTeamAdmin()">Close</button></div>
+            <section data-team-admin-panel="attendance">
+                <div class="team-admin-heading"><div><h2 id="team-admin-title">Team attendance</h2><p>Daily attendance for your staff and your own record.</p></div></div>
+                <div class="team-admin-stats" aria-live="polite">
+                    <div class="team-admin-stat"><span>Present</span><b id="team-attendance-present">0</b><small>of 5 staff</small></div>
+                    <div class="team-admin-stat"><span>On leave</span><b id="team-attendance-leave">0</b><small>today</small></div>
+                    <div class="team-admin-stat"><span>Not marked</span><b id="team-attendance-unmarked">5</b><small>needs an update</small></div>
+                </div>
+                <div class="team-admin-tabs"><button type="button" class="active" data-team-admin-tab="attendance">Daily log</button><button type="button" data-team-admin-tab="holidays">Leave records</button></div>
+                <div class="team-admin-toolbar">
+                    <div class="team-admin-field"><label for="team-attendance-date">Attendance date (India)</label><input id="team-attendance-date" type="date"></div>
+                    <div class="team-admin-actions"><button type="button" id="team-attendance-mark-all">Mark all present</button><button type="button" id="team-attendance-save" class="primary">Save attendance</button></div>
+                </div>
+                <div class="team-admin-table-wrap"><table class="team-admin-table"><thead><tr><th>TEAM MEMBER</th><th>ATTENDANCE</th></tr></thead><tbody id="team-attendance-rows"></tbody></table></div>
+                <div class="team-admin-message" id="team-attendance-message" role="status" aria-live="polite"></div>
+            </section>
+            <section data-team-admin-panel="holidays" hidden>
+                <div class="team-admin-heading"><div><h2>Holidays &amp; leave register</h2><p>Record personal holidays and time off for each team member.</p></div></div>
+                <div class="team-admin-toolbar"><div><strong style="font-size:13px;">Team records</strong></div><div class="team-admin-field"><label for="team-holiday-year">Year</label><select id="team-holiday-year"><option>2026</option><option>2027</option></select></div></div>
+                <div class="team-admin-leave-grid"><div class="team-admin-records" id="team-holiday-records"><div class="team-admin-empty">Loading holiday records…</div></div>
+                    <form class="team-admin-form" id="team-holiday-form"><h3>Add holiday / leave</h3>
+                        <div class="team-admin-field"><label for="team-holiday-staff">Team member</label><select id="team-holiday-staff"></select></div>
+                        <div class="team-admin-field"><label for="team-holiday-kind">Record type</label><select id="team-holiday-kind"><option>Personal holiday</option><option>Vacation</option><option>Sick leave</option><option>Office holiday</option></select></div>
+                        <div class="team-admin-field"><label for="team-holiday-start">From</label><input id="team-holiday-start" type="date" required></div>
+                        <div class="team-admin-field"><label for="team-holiday-end">To</label><input id="team-holiday-end" type="date" required></div>
+                        <div class="team-admin-field"><label for="team-holiday-note">Note</label><textarea id="team-holiday-note" placeholder="Optional note"></textarea></div>
+                        <button class="team-admin-submit" type="submit">Add to register</button>
+                        <div class="team-admin-message" id="team-holiday-message" role="status" aria-live="polite"></div>
+                    </form>
+                </div>
+            </section>
+            <section data-team-admin-panel="staff" hidden>
+                <div class="team-admin-heading"><div><h2>Staff</h2><p>Attendance and holiday records are kept per team member.</p></div></div>
+                <div class="team-admin-records" id="team-admin-staff-list"></div>
+            </section>
+        </main>
+    </div>
+</dialog>
+
 <dialog id="holiday-calendar-dialog" class="holiday-calendar-dialog" aria-labelledby="holiday-calendar-title">
     <div class="holiday-calendar-header">
         <div>
             <h2 id="holiday-calendar-title">Holiday Calendar</h2>
-            <p>2026–2027 statutory and office holidays</p>
+            <p>2026 holidays highlighted · 2027 calendar dates only</p>
         </div>
         <button type="button" class="calendar-close-button" onclick="closeHolidayCalendar()">Close</button>
     </div>
@@ -937,11 +1048,6 @@
             '2026-05-18': 'Victoria Day', '2026-07-01': 'Canada Day', '2026-10-12': 'Thanksgiving Day',
             '2026-11-05': 'Diwali', '2026-11-06': 'Diwali', '2026-12-25': 'Christmas Day'
         },
-        2027: {
-            '2027-01-01': 'New Year Day', '2027-02-15': 'Family Day', '2027-03-26': 'Good Friday',
-            '2027-05-24': 'Victoria Day', '2027-07-01': 'Canada Day', '2027-09-06': 'Labour Day',
-            '2027-10-11': 'Thanksgiving Day', '2027-11-11': 'Remembrance Day', '2027-12-25': 'Christmas Day'
-        }
     };
     const calendarMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const calendarDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -1318,6 +1424,8 @@
             userLabel.textContent = `${profile.staffName}${isMasterUser() ? ' (Master)' : ''}`;
         }
         document.body.classList.remove('auth-locked');
+        const attendanceButton = document.getElementById('team-admin-open-button');
+        if (attendanceButton) attendanceButton.hidden = !isMasterUser();
         await loadDataFromServer();
         showThemeWelcome();
         showBirthdayReminder();
@@ -1334,6 +1442,9 @@
         currentUserProfile = null;
         storedData = {};
         document.body.classList.add('auth-locked');
+        const attendanceButton = document.getElementById('team-admin-open-button');
+        if (attendanceButton) attendanceButton.hidden = true;
+        closeTeamAdmin();
         const loginError = document.getElementById('login-error');
         if (loginError) loginError.textContent = message;
         const loginButton = document.getElementById('login-submit');
@@ -1940,6 +2051,177 @@ const visibleSerialNumber = Number(pageStartIndex) + Number(visibleOffset) + 1;
         auditOverdueMilestones();
         setSyncStatus('Loaded', '#0369a1');
     }
+    const TEAM_ATTENDANCE_TABLE = 'team_attendance';
+    const TEAM_HOLIDAYS_TABLE = 'team_holidays';
+    let teamAdminHandlersReady = false;
+
+    function getTeamStaffNames() {
+        return [...new Set(Object.values(TEAM_LOGIN_DIRECTORY).map(profile => profile.staffName))];
+    }
+
+    function getIndiaIsoDate() {
+        const indiaDate = getIndiaDateParts();
+        return `${indiaDate.year}-${indiaDate.month}-${indiaDate.day}`;
+    }
+
+    function setTeamAdminMessage(elementId, message, type = '') {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        element.textContent = message;
+        element.className = `team-admin-message${type ? ` ${type}` : ''}`;
+    }
+
+    function openTeamAdmin() {
+        if (!isMasterUser()) return;
+        const dialog = document.getElementById('team-admin-dialog');
+        if (!dialog.open) dialog.showModal();
+        const dateInput = document.getElementById('team-attendance-date');
+        if (dateInput && !dateInput.value) dateInput.value = getIndiaIsoDate();
+        loadTeamAttendance();
+        loadTeamHolidays();
+    }
+
+    function closeTeamAdmin() {
+        const dialog = document.getElementById('team-admin-dialog');
+        if (dialog && dialog.open) dialog.close();
+    }
+
+    function switchTeamAdminTab(tabName) {
+        document.querySelectorAll('[data-team-admin-panel]').forEach(panel => {
+            panel.hidden = panel.dataset.teamAdminPanel !== tabName;
+        });
+        document.querySelectorAll('[data-team-admin-tab]').forEach(button => {
+            button.classList.toggle('active', button.dataset.teamAdminTab === tabName);
+        });
+        if (tabName === 'holidays') loadTeamHolidays();
+    }
+
+    function initializeTeamAdmin() {
+        if (teamAdminHandlersReady) return;
+        teamAdminHandlersReady = true;
+        const staff = getTeamStaffNames();
+        const rows = document.getElementById('team-attendance-rows');
+        rows.innerHTML = staff.map(staffName => {
+            const initials = staffName.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase();
+            const profile = Object.values(TEAM_LOGIN_DIRECTORY).find(item => item.staffName === staffName);
+            const role = profile && profile.role === 'master' ? 'Master' : 'Staff';
+            return `<tr data-staff-name="${escapeInputText(staffName)}"><td><div class="team-admin-person"><span class="team-admin-avatar">${initials}</span>${escapeInputText(staffName)} <small style="color:#7b8ca6;font-weight:500;">${role}</small></div></td><td><select class="team-admin-status-select" aria-label="Attendance for ${escapeInputText(staffName)}"><option>Present</option><option>Absent</option><option>Half day</option><option>Leave</option><option selected>Not marked</option></select></td></tr>`;
+        }).join('');
+        document.getElementById('team-holiday-staff').innerHTML = staff.map(name => `<option value="${escapeInputText(name)}">${escapeInputText(name)}</option>`).join('');
+        document.getElementById('team-admin-staff-list').innerHTML = staff.map(name => {
+            const profile = Object.values(TEAM_LOGIN_DIRECTORY).find(item => item.staffName === name);
+            const role = profile && profile.role === 'master' ? 'Master' : 'Staff';
+            return `<div class="team-admin-record"><div><b>${escapeInputText(name)}</b></div><span class="team-admin-record-badge">${role}</span></div>`;
+        }).join('');
+        document.querySelectorAll('[data-team-admin-tab]').forEach(button => button.addEventListener('click', () => switchTeamAdminTab(button.dataset.teamAdminTab)));
+        document.getElementById('team-attendance-date').addEventListener('change', loadTeamAttendance);
+        document.getElementById('team-attendance-rows').addEventListener('change', updateTeamAttendanceCounts);
+        document.getElementById('team-attendance-mark-all').addEventListener('click', () => {
+            rows.querySelectorAll('.team-admin-status-select').forEach(select => { select.value = 'Present'; });
+            updateTeamAttendanceCounts();
+        });
+        document.getElementById('team-attendance-save').addEventListener('click', saveTeamAttendance);
+        document.getElementById('team-holiday-year').addEventListener('change', loadTeamHolidays);
+        document.getElementById('team-holiday-form').addEventListener('submit', addTeamHoliday);
+    }
+
+    function updateTeamAttendanceCounts() {
+        const counts = { present: 0, leave: 0, unmarked: 0 };
+        document.querySelectorAll('#team-attendance-rows .team-admin-status-select').forEach(select => {
+            if (select.value === 'Present') counts.present++;
+            else if (select.value === 'Leave') counts.leave++;
+            else if (select.value === 'Not marked') counts.unmarked++;
+        });
+        document.getElementById('team-attendance-present').textContent = counts.present;
+        document.getElementById('team-attendance-leave').textContent = counts.leave;
+        document.getElementById('team-attendance-unmarked').textContent = counts.unmarked;
+    }
+
+    async function loadTeamAttendance() {
+        if (!isMasterUser()) return;
+        const dateInput = document.getElementById('team-attendance-date');
+        const date = dateInput.value || getIndiaIsoDate();
+        if (!dateInput.value) dateInput.value = date;
+        setTeamAdminMessage('team-attendance-message', 'Loading attendance…');
+        const { data, error } = await supabaseClient.from(TEAM_ATTENDANCE_TABLE)
+            .select('staff_name,attendance_status').eq('attendance_date', date);
+        if (error) {
+            setTeamAdminMessage('team-attendance-message', `Could not load attendance: ${error.message}. Set up the attendance tables first.`, 'error');
+            return;
+        }
+        const savedStatuses = new Map((data || []).map(row => [row.staff_name, row.attendance_status]));
+        document.querySelectorAll('#team-attendance-rows tr').forEach(row => {
+            row.querySelector('.team-admin-status-select').value = savedStatuses.get(row.dataset.staffName) || 'Not marked';
+        });
+        updateTeamAttendanceCounts();
+        setTeamAdminMessage('team-attendance-message', `Attendance loaded for ${date} (India time).`);
+    }
+
+    async function saveTeamAttendance() {
+        if (!isMasterUser()) return;
+        const date = document.getElementById('team-attendance-date').value;
+        if (!date) return setTeamAdminMessage('team-attendance-message', 'Choose an attendance date.', 'error');
+        const records = [...document.querySelectorAll('#team-attendance-rows tr')].map(row => ({
+            attendance_date: date, staff_name: row.dataset.staffName,
+            attendance_status: row.querySelector('.team-admin-status-select').value
+        }));
+        const button = document.getElementById('team-attendance-save');
+        button.disabled = true;
+        setTeamAdminMessage('team-attendance-message', 'Saving attendance…');
+        const { error } = await supabaseClient.from(TEAM_ATTENDANCE_TABLE)
+            .upsert(records, { onConflict: 'attendance_date,staff_name' });
+        button.disabled = false;
+        if (error) return setTeamAdminMessage('team-attendance-message', `Save failed: ${error.message}`, 'error');
+        updateTeamAttendanceCounts();
+        setTeamAdminMessage('team-attendance-message', `Attendance saved for ${date}.`, 'success');
+    }
+
+    async function loadTeamHolidays() {
+        if (!isMasterUser()) return;
+        const year = document.getElementById('team-holiday-year').value || String(new Date().getFullYear());
+        const recordsElement = document.getElementById('team-holiday-records');
+        recordsElement.innerHTML = '<div class="team-admin-empty">Loading holiday records…</div>';
+        const { data, error } = await supabaseClient.from(TEAM_HOLIDAYS_TABLE).select('*')
+            .lte('start_date', `${year}-12-31`).gte('end_date', `${year}-01-01`).order('start_date', { ascending: true });
+        if (error) {
+            recordsElement.innerHTML = `<div class="team-admin-empty">Could not load records: ${escapeInputText(error.message)}. Set up the attendance tables first.</div>`;
+            return;
+        }
+        if (!data || data.length === 0) {
+            recordsElement.innerHTML = '<div class="team-admin-empty">No holidays or leave recorded for this year.</div>';
+            return;
+        }
+        recordsElement.innerHTML = data.map(record => {
+            const dates = record.start_date === record.end_date ? record.start_date : `${record.start_date} – ${record.end_date}`;
+            return `<div class="team-admin-record"><div><b>${escapeInputText(record.staff_name)} · ${escapeInputText(record.leave_type)}</b><small>${escapeInputText(dates)}${record.note ? ` · ${escapeInputText(record.note)}` : ''}</small></div><span class="team-admin-record-badge">Recorded</span></div>`;
+        }).join('');
+    }
+
+    async function addTeamHoliday(event) {
+        event.preventDefault();
+        if (!isMasterUser()) return;
+        const staffName = document.getElementById('team-holiday-staff').value;
+        const leaveType = document.getElementById('team-holiday-kind').value;
+        const startDate = document.getElementById('team-holiday-start').value;
+        const endDate = document.getElementById('team-holiday-end').value;
+        const note = document.getElementById('team-holiday-note').value.trim();
+        if (!startDate || !endDate || endDate < startDate) return setTeamAdminMessage('team-holiday-message', 'Enter a valid date range.', 'error');
+        const button = event.currentTarget.querySelector('.team-admin-submit');
+        button.disabled = true;
+        setTeamAdminMessage('team-holiday-message', 'Saving record…');
+        const { error } = await supabaseClient.from(TEAM_HOLIDAYS_TABLE).insert({
+            staff_name: staffName, leave_type: leaveType, start_date: startDate, end_date: endDate,
+            note: note || null, created_by: currentUserProfile && currentUserProfile.email
+        });
+        button.disabled = false;
+        if (error) return setTeamAdminMessage('team-holiday-message', `Save failed: ${error.message}`, 'error');
+        event.currentTarget.reset();
+        document.getElementById('team-holiday-year').value = startDate.slice(0, 4);
+        setTeamAdminMessage('team-holiday-message', 'Holiday / leave added to the register.', 'success');
+        await loadTeamHolidays();
+    }
+
+    initializeTeamAdmin();
     initializeAuth();
 function updateClock() {
     const now = new Date();
